@@ -6,6 +6,7 @@ import { coverageFixture } from '../tests/coverageFixture.js';
 import fs from 'node:fs/promises';
 process.env.GEMINI_API_KEY = 'ui-fixture-only';
 const { data, snapshot } = coverageFixture(true);
+data.targets[0].thesis = 'FPT KBSV report';
 const report = {
   ...acceptReport(data, snapshot),
   id: 'coverage-ui-fixture',
@@ -30,6 +31,13 @@ const report = {
 };
 const app = createApp({ research: async () => structuredClone(report) });
 report.company.name = '[UI fixture] FPT Corporation';
+report.targets.push({
+  ...report.targets[1],
+  firm: 'DSC',
+  title: 'FPT: Khuyến nghị MUA với giá mục tiêu 26,900 đồng/cổ phiếu',
+  listedAt: '2026-08-07',
+  sourceIds: ['C'],
+});
 app.use(express.static('dist'));
 app.get('/{*path}', (_, res) => res.sendFile('index.html', { root: 'dist' }));
 app.listen(3002, '127.0.0.1', () => console.log('Coverage UI fixtures: http://localhost:3002'));

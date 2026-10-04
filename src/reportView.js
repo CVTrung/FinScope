@@ -1,4 +1,5 @@
 import { safeUrl, validDate } from '../shared/report.js';
+import { combineFinancials } from '../shared/evidence.js';
 
 export const financialFields = [
   ['Revenue', 'revenue', ''],
@@ -15,8 +16,9 @@ export function reportView(report) {
   );
   const sourced = (row) => row.sourceIds?.some((id) => sources.has(id));
   const dated = (date) => validDate(date) && new Date(date) <= new Date(report.generatedAt);
-  const financials = report.financials.filter(
+  const financials = combineFinancials(report.financials, report.sources).financials.filter(
     (row) =>
+      !row.isAlternative &&
       sourced(row) &&
       dated(row.period) &&
       financialFields.some(([, key]) => Number.isFinite(row[key])),

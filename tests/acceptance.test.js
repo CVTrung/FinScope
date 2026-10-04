@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { acceptReport } from '../server/reportAcceptance.js';
-import { combineFinancials } from '../shared/evidence.js';
+import { combineFinancials, prioritizeVietstock } from '../shared/evidence.js';
 import { cleanReport, summarizeTargets } from '../shared/report.js';
 import { calculateGrowth } from '../server/companyResearch.js';
 import { coverageFixture } from './coverageFixture.js';
 import { requestError } from '../src/requestError.js';
+import { reportView } from '../src/reportView.js';
 
 test('secondary evidence, old records, YTD and partial broker reports remain traceable', () => {
   const { data, snapshot } = coverageFixture();
@@ -28,6 +29,17 @@ test('secondary evidence, old records, YTD and partial broker reports remain tra
     [12000, 12500],
   );
   assert.deepEqual(calculateGrowth(report.financials), []);
+  const view = reportView({
+    ...report,
+    sources: snapshot.results.flatMap((section) => section.sources),
+    generatedAt: snapshot.generatedAt,
+  });
+  assert.equal(view.financials.filter((row) => row.period === '2025-12-31').length, 1);
+  assert.equal(view.financials.find((row) => row.period === '2025-12-31').revenue, 12000);
+  assert.equal(
+    view.financials.find((row) => row.period === '2025-12-31').preferredSource,
+    'Vietstock',
+  );
 });
 test('URLs without sentence mappings retain sources-only sections and never assert verified figures', () => {
   const { data, snapshot } = coverageFixture(true);
@@ -80,4 +92,20 @@ test('unknown units stay empty and different units or accounting scopes do not m
 test('fetch failures identify the unavailable backend while provider errors retain their message', () => {
   assert.match(requestError(new TypeError('Failed to fetch')), /backend cannot be reached/);
   assert.equal(requestError(new Error('Gemini quota exceeded')), 'Gemini quota exceeded');
+});
+test('publisher preference uses the actual Vietstock hostname and favors directly retrieved rows', () => {
+  const rows = ['fake', 'secondary', 'direct'].map((id) => ({
+    sourceIds: [id],
+    conflictGroup: 'same',
+    evidenceStatus: id === 'direct' ? 'direct' : 'claim-mapped',
+  }));
+  const ranked = prioritizeVietstock(rows, [
+    { id: 'fake', url: 'https://vietstock.vn.evil.test/fpt' },
+    { id: 'secondary', url: 'https://vietstock.vn/fpt' },
+    { id: 'direct', url: 'https://finance.vietstock.vn/fpt' },
+  ]);
+  assert.equal(ranked[2].preferredSource, 'Vietstock');
+  assert.equal(ranked[0].isAlternative, true);
+  assert.equal(ranked[1].isAlternative, true);
+  assert.ok(ranked.every((row) => row.conflictGroup === 'same'));
 });

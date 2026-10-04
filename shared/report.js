@@ -195,6 +195,7 @@ export function cleanReport(input, sources, generatedAt) {
       row.evidenceStatus = original.evidenceStatus;
     if (typeof original?.conflictGroup === 'string') row.conflictGroup = original.conflictGroup;
     if (typeof original?.title === 'string') row.title = original.title;
+    if (original?.targetOrigin === 'listing') row.targetOrigin = 'listing';
     if (validDate(original?.listedAt) && new Date(original.listedAt) <= new Date(generatedAt))
       row.listedAt = original.listedAt;
   };

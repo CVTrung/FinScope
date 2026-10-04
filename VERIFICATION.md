@@ -1,5 +1,18 @@
 # Verification — 4 October 2026
 
+## Listing targets and expandable report content (latest)
+
+- Identified the title/target mismatch: direct broker listing records previously forced `target: null` even when their Vietstock title contained an explicit price. Shared code now extracts explicitly labeled listing targets, handles comma/dot thousands separators and restores them in existing saved reports without another model call. These targets remain labeled as publisher-listing evidence, with the report date unavailable when only a listing date exists, and stay outside consensus/upside when comparability is unknown.
+- Sources in the sidebar and broker table are collapsed by default. Broker reasoning returns only for populated thesis/assumptions/risks, with no empty expand controls. Removed all three lines beneath the financial table and now show all available periods without that footer toggle.
+- 91 automated tests and production build passed. UI fixture checks showed the recovered 26,900 VND target, listing-derived label, separately displayed publisher date, collapsed source lists, and reasoning on KBSV only while SSI/DSC had no empty reasoning control. Source and reasoning expand actions worked. Financial footer text was absent. Screenshot: `artifacts/target-listing-reasoning-fixture.png` (sample data). No new provider research was needed.
+
+## Simplified broker table and Vietstock preference (latest)
+
+- Conflicting comparable records now prefer the actual Vietstock hostname, with directly retrieved records first. The main financial/broker table hides competing alternatives when a Vietstock record is available; original records and conflict details remain traceable. Growth and target calculations still exclude unverified/conflicting records rather than inventing comparability.
+- Removed the author-rating column, date-cell citation status, statistical eligibility badges, zero eligible-target line, valuation introduction, yellow method box and time selector. The broker table now has four columns and a narrower minimum width. Missing-data/document sidebar was replaced with an independent list of valid available sources; missing links have no placeholder.
+- Browser fixture checks verified that quarterly selection leaves the growth card visible with an explicit unavailable-comparison message. Annual conflict display showed Vietstock's 12,000 instead of CafeF's 12,500, while the latter remained in conflict details. The four-column broker table retained the partial SSI record. Screenshot: `artifacts/broker-table-simplified-fixture.png` (sample financial data).
+- Publisher-preference regression checks cover actual hostnames, deceptive hostname rejection and direct-source priority. Production build and automated tests were rerun. No paid Gemini/News requests were needed for these layout changes.
+
 ## Evidence coverage and backend availability (latest)
 
 - Restored the local development backend at `http://localhost:3000` with provider network access. News was the first action, before any Home research: HTTP 200 with 7 FPT articles for 7 days after relevance filtering. A subsequent Vietstock history action returned HTTP 200 with 250 records. Health remained OK and reported the environment-selected `gemini-2.5-flash` model. The original local failure was an absent server; restricted outbound access also prevented provider retrieval in the sandbox. Network failures now have an actionable frontend message.

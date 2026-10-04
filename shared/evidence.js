@@ -31,7 +31,43 @@ export const financialMetrics = [
 ];
 
 // Merge compatible complementary cells, never resolve a conflicting value by averaging.
-export function combineFinancials(rows) {
+export function prioritizeVietstock(rows, sources = []) {
+  const vietstockIds = new Set(
+    sources
+      .filter((source) => {
+        try {
+          const host = new URL(source.url).hostname;
+          return host === 'vietstock.vn' || host.endsWith('.vietstock.vn');
+        } catch {
+          return false;
+        }
+      })
+      .map((source) => source.id),
+  );
+  const groups = new Map();
+  for (const row of rows)
+    if (row.conflictGroup) {
+      if (!groups.has(row.conflictGroup)) groups.set(row.conflictGroup, []);
+      groups.get(row.conflictGroup).push(row);
+    }
+  const preferred = new Set();
+  for (const records of groups.values()) {
+    const candidates = records.filter((row) => row.sourceIds.some((id) => vietstockIds.has(id)));
+    const row = candidates.find((row) => row.evidenceStatus === 'direct') || candidates[0];
+    if (row) preferred.add(row);
+  }
+  return rows.map((row) => ({
+    ...row,
+    preferredSource: preferred.has(row) ? 'Vietstock' : '',
+    isAlternative: Boolean(
+      row.conflictGroup &&
+      !preferred.has(row) &&
+      groups.get(row.conflictGroup).some((record) => preferred.has(record)),
+    ),
+  }));
+}
+
+export function combineFinancials(rows, sources = []) {
   const groups = new Map();
   for (const row of rows) {
     const key = financialKey(row);
@@ -86,5 +122,10 @@ export function combineFinancials(rows) {
       financials.push(merged);
     }
   }
-  return { financials: financials.sort((a, b) => a.period.localeCompare(b.period)), conflicts };
+  return {
+    financials: prioritizeVietstock(financials, sources).sort((a, b) =>
+      a.period.localeCompare(b.period),
+    ),
+    conflicts,
+  };
 }

@@ -1,4 +1,5 @@
 import { useLanguage } from './i18n.jsx';
+import { safeUrl } from '../shared/report.js';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock3, FileText, Check, Minus, LoaderCircle } from 'lucide-react';
@@ -101,11 +102,14 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
       ? 'annual'
       : view.financials[0]?.kind || 'quarterly',
   );
-  const [showAll, setShowAll] = useState(false);
-  const rows = view.financials.filter((row) => row.kind === period).slice(showAll ? 0 : -4);
+  const rows = view.financials.filter((row) => row.kind === period);
   const growth = (report.growth || []).filter((row) => row.kind === period).slice(-2);
   const fields = financialFields.filter(([, key]) => rows.some((row) => Number.isFinite(row[key])));
-  const missing = view.coverage.filter((item) => !item.available);
+  const availableSources = [
+    ...new Map(
+      report.sources.filter((source) => safeUrl(source.url)).map((source) => [source.url, source]),
+    ).values(),
+  ];
   return (
     <div className="stack company-report report-redesign">
       {report.researchLanguage && report.researchLanguage !== report.language && (
@@ -186,12 +190,28 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
               ))}
             </details>
           )}
-          {growth.length > 0 && (
+          {view.financials.length > 0 && (
             <Card className="teal">
               <Heading
                 title={t('Reported growth')}
                 subtitle={t('Year-on-year change calculated from matching reported periods.')}
               />
+              <p className="small muted">
+                {t(
+                  period === 'annual'
+                    ? 'Annual'
+                    : period === 'quarterly'
+                      ? 'Quarterly'
+                      : 'Year to date',
+                )}
+              </p>
+              {growth.length === 0 && (
+                <p className="small muted">
+                  {t(
+                    'No matching prior-year figures are available for this period. Growth cannot be calculated.',
+                  )}
+                </p>
+              )}
               <div className="grid two">
                 {growth.map((row) => (
                   <div key={row.metric + row.period}>
@@ -268,6 +288,7 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
                                     : 'Scope unknown',
                             )}
                           </small>
+                          {row.preferredSource && <small>{t('Vietstock prioritized')}</small>}
                           <Sources ids={row.sourceIds} report={report} />
                           {row.operatingCashFlow !== null && (
                             <small>
@@ -304,23 +325,6 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
                   </tbody>
                 </table>
               </div>
-              <p className="small muted">
-                {t(
-                  'Up to four reported periods. Check units and accounting scope before comparing.',
-                )}
-              </p>
-              <button className="text-button" onClick={() => setShowAll((value) => !value)}>
-                {t(showAll ? 'Show recent periods' : 'Show all periods')}
-              </button>
-              {fields.length < financialFields.length && (
-                <p className="small muted">
-                  {t('Not available')}:{' '}
-                  {financialFields
-                    .filter(([, key]) => !fields.some(([, shown]) => shown === key))
-                    .map(([label]) => t(label))
-                    .join(' · ')}
-                </p>
-              )}
             </Card>
           )}
 
@@ -356,6 +360,21 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
                             : 'Scope unknown',
                     )}
                   </summary>
+                  {report.sources.some(
+                    (source) =>
+                      conflict.fields.some((field) =>
+                        field.values.some((value) => value.sourceIds.includes(source.id)),
+                      ) &&
+                      /(^|\.)vietstock\.vn$/.test(
+                        new URL(safeUrl(source.url) || 'https://invalid.invalid').hostname,
+                      ),
+                  ) && (
+                    <p>
+                      {t(
+                        'Vietstock figures are prioritized in the financial table. Other figures remain here for comparison.',
+                      )}
+                    </p>
+                  )}
                   <p>{t(conflict.note)}</p>
                   {conflict.fields.map((field) => (
                     <div key={field.metric}>
@@ -492,64 +511,20 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
               )}
             </p>
           </Card>
-          <Card className="data-gaps">
-            <details>
-              <summary>{t('Missing coverage and original documents')}</summary>
-              <Heading
-                title={t('What this report cannot establish')}
-                subtitle={t('Missing information is not zero and does not mean it does not exist.')}
-              />
-              {missing.length > 0 ? (
-                <ul>
-                  {missing.map((item) => (
-                    <li key={item.label}>
-                      <strong>{t(item.label)}: </strong>
-                      {t(item.reason)}
-                    </li>
+          {availableSources.length > 0 && (
+            <Card className="report-sources">
+              <details>
+                <summary>{t('Sources')}</summary>
+                <div className="stack">
+                  {availableSources.map((source) => (
+                    <a key={source.url} href={source.url} target="_blank" rel="noreferrer">
+                      {source.title || new URL(source.url).hostname} ↗
+                    </a>
                   ))}
-                </ul>
-              ) : (
-                <p className="muted">
-                  {t(
-                    'All core sections have some evidence. Coverage can still be incomplete or outdated.',
-                  )}
-                </p>
-              )}
-              {(report.limitations.length > 0 || report.analysis.risks.length > 0) && (
-                <details>
-                  <summary>{t('Research limitations and risks')}</summary>
-                  <ul>
-                    {[...new Set([...report.limitations, ...report.analysis.risks])]
-                      .filter(Boolean)
-                      .map((item, i) => (
-                        <li key={i}>{t(item)}</li>
-                      ))}
-                  </ul>
-                </details>
-              )}
-              <button className="text-button" onClick={onEvidence}>
-                {t('Inspect all sources and original research')}
-                <ArrowRight size={15} />
-              </button>
-              {report.directEvidence?.reports?.length > 0 && (
-                <>
-                  <h3>{t('Original broker report links')}</h3>
-                  <p className="small muted">
-                    {t(
-                      'Listing dates are publisher dates, not verified report dates. Links alone do not establish targets.',
-                    )}
-                  </p>
-                  {report.directEvidence.reports.map((item, index) => (
-                    <p className="small" key={index}>
-                      <a href={item.originalPdfUrl || item.url} target="_blank" rel="noreferrer">
-                        {item.firm} · {item.title}
-                      </a>
-                    </p>
-                  ))}
-                </>
-              )}
-            </details>
-          </Card>
+                </div>
+              </details>
+            </Card>
+          )}
 
           <Card className="report-news">
             <FileText size={20} />

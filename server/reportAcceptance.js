@@ -1,8 +1,9 @@
 import { ResearchError } from './research.js';
 import { auditEvidence } from './evidenceAudit.js';
 import { cleanReport, validDate, safeUrl } from '../shared/report.js';
-import { combineFinancials, freshness } from '../shared/evidence.js';
+import { combineFinancials, freshness, prioritizeVietstock } from '../shared/evidence.js';
 import { resolveNewsCompany } from '../shared/companyAliases.js';
+import { enrichListingTargets } from '../shared/brokerListing.js';
 
 export function acceptanceEvidence(snapshot) {
   const results = [...snapshot.results, ...(snapshot.direct ? [snapshot.direct] : [])].map(
@@ -232,7 +233,7 @@ export function acceptReport(input, snapshot) {
       report.quote.basis = '';
     report.quote = annotate(report.quote, report.quote.asOf);
   }
-  const combined = combineFinancials(report.financials);
+  const combined = combineFinancials(report.financials, sources);
   report.financials = combined.financials;
   report.conflicts = combined.conflicts;
   report.metrics = report.metrics
@@ -332,6 +333,7 @@ export function acceptReport(input, snapshot) {
       freshness: freshness(broker.listedAt, snapshot.generatedAt),
     });
   }
+  report.targets = enrichListingTargets({ ...report, sources });
   const grouped = new Map();
   report.targets.forEach((row) => {
     const key = row.firm.toLowerCase() + ':' + row.publishedAt;
@@ -349,5 +351,6 @@ export function acceptReport(input, snapshot) {
     report.limitations.push(
       'Conflicting sourced figures are retained separately. No average is used to resolve the difference.',
     );
+  report.targets = prioritizeVietstock(report.targets, sources);
   return report;
 }

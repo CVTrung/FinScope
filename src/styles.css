@@ -1747,7 +1747,7 @@ dialog::backdrop {
   max-width: 100%;
 }
 .valuation-table {
-  min-width: 960px;
+  min-width: 600px;
 }
 .valuation-table th {
   font-size: 11px;
@@ -1760,11 +1760,8 @@ dialog::backdrop {
 .valuation-table td:first-child {
   min-width: 140px;
 }
-.valuation-table td:nth-child(5) {
-  width: 260px;
-}
 .valuation-table td:last-child {
-  width: 210px;
+  width: 180px;
 }
 .valuation-table .pill {
   white-space: normal;
@@ -1776,7 +1773,7 @@ dialog::backdrop {
   white-space: nowrap;
 }
 .valuation-source {
-  margin-top: 10px;
+  margin-top: 0;
   overflow-wrap: anywhere;
 }
 .valuation-table summary {
