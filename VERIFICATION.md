@@ -1,4 +1,11 @@
-# Verification — 4 October 2026
+# Verification — 5 October 2026
+
+## Expanded Vietstock quarterly history — 5 October 2026
+
+- Live HPG request with PageSize=12 returned only five columns. Page 2 returned older quarters and page 3 returned another five; larger page size alone was insufficient. The former parser cap also discarded page 1's fifth quarter, Q2 2025, needed for Q2 2026 year-on-year growth.
+- Quarterly retrieval now parses each page independently (Value1..Value5 restart per page), fetches at most three pages, deduplicates periods/scopes and keeps the latest 12 records. Failed/repeated older pages stop with existing data preserved. Annual history stays separate at four records, and cumulative YTD rows retain their own kind. No Gemini calls were added; the original maximum-three-request research tests still pass.
+- The real retrieveVietstock adapter returned **12 HPG quarters**, with matching Q2 2026 and Q2 2025 revenue/profit evidence and two calculated quarterly growth values. Saved public evidence: `artifacts/vietstock-quarterly-history-verified.json`. Live check: `node scripts/check-quarterly-history.mjs` (Vietstock only, no Gemini/SerpApi).
+- **93 tests passed** and production build succeeded. UI replay of the actual retrieved public data showed 12 quarter columns and a populated quarterly growth card; this was not a new complete Gemini report. Screenshot: `artifacts/quarterly-history-growth-verified.png`. Existing browser-saved reports do not automatically acquire older periods; new Home searches use the expanded retrieval.
 
 ## Listing targets and expandable report content (latest)
 

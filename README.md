@@ -44,6 +44,8 @@ For matching-period/unit/scope financial conflicts, the main table prioritizes V
 
 ## Part 3 — Independent News
 
+Supporting Vietstock financial retrieval requests up to three quarterly pages and retains the latest 12 valid quarterly/YTD records, keeping page-specific value columns, dates, units and accounting scopes intact. A failed older page preserves fetched data; repeated pages stop pagination. Annual history remains separately bounded to four records. Latest periods appear first in the financial table. Existing saved reports keep their original snapshot; start a new Home search to retrieve expanded history. These are public-data requests and do not add Gemini inference calls.
+
 News requires a supported Vietnamese company name or ticker and GOOGLE_NEWS_API_KEY issued by SerpApi. It makes up to four bounded Google News searches per uncached query/window: general company coverage, financial results, corporate actions and older-window or Vietstock coverage. Public Vietstock articles supplement results when accessible. Domain, company relevance and date filters apply; results are deduplicated and sorted newest first. Optional article excerpts/images remain source material, never proof of numeric financials or target prices.
 
 Select a time window and press Search News. Changing the window alone does not search. Results persist across navigation/reload and server searches cache for 15 minutes. News does not call Gemini or require a Home report.

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Search, X, Download } from 'lucide-react';
 import { safeUrl, validDate } from '../shared/report.js';
 import { freshness } from '../shared/evidence.js';
+import { reportCsv } from '../shared/reportCsv.js';
 
 export function EvidenceStatus({ row, date, report }) {
   const { t } = useLanguage();
@@ -268,16 +269,16 @@ export function SearchSuggestions({ report }) {
   );
 }
 export function ExportButton({ report }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   function download() {
     const url = URL.createObjectURL(
-      new Blob([JSON.stringify(report, null, 2)], {
-        type: 'application/json',
+      new Blob([reportCsv(report, language)], {
+        type: 'text/csv;charset=utf-8',
       }),
     );
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `finscope-${(report.company.ticker || 'report').replace(/[^a-z0-9-]/gi, '')}-${report.generatedAt.slice(0, 10)}.json`;
+    anchor.download = `finscope-${(report.company.ticker || 'report').replace(/[^a-z0-9-]/gi, '')}-${report.generatedAt.slice(0, 10)}.csv`;
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }

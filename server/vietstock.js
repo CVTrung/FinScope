@@ -180,8 +180,40 @@ export function parseVietstockFinancials(data, kind, sourceId, now = new Date())
         },
       ];
     })
-    .sort((a, b) => a.period.localeCompare(b.period))
-    .slice(-4);
+    .sort((a, b) => a.period.localeCompare(b.period));
+}
+
+export async function quarterlyHistory(session, ticker, firstPage, now = new Date()) {
+  const rows = parseVietstockFinancials(firstPage, 'quarterly', 'D3', now);
+  if (!rows.length) return rows;
+  const key = (row) => `${row.kind}:${row.periodStart}:${row.period}:${row.profitBasis}`;
+  const seen = new Set(rows.map(key));
+  // Vietstock currently returns five columns regardless of requested PageSize.
+  // Value1..Value5 restart on each page, so parse pages before combining records.
+  for (let page = 2; page <= 3 && rows.length < 12; page++) {
+    let data;
+    try {
+      data = await session.post('/data/financeinfo', {
+        Code: ticker,
+        Page: page,
+        PageSize: 12,
+        ReportTermType: 2,
+        ReportType: 'BCTQ',
+        Unit: 1,
+      });
+    } catch {
+      break; // Preserve already retrieved records; no retry of a failed page.
+    }
+    const added = parseVietstockFinancials(data, 'quarterly', 'D3', now).filter(
+      (row) => !seen.has(key(row)),
+    );
+    if (!added.length) break;
+    for (const row of added) {
+      seen.add(key(row));
+      rows.push(row);
+    }
+  }
+  return rows.sort((a, b) => a.period.localeCompare(b.period)).slice(-12);
 }
 
 export function parseVietstockReports(data, ticker, now = new Date()) {
@@ -354,7 +386,7 @@ export async function retrieveVietstock({
       {
         Code: company.ticker,
         Page: 1,
-        PageSize: 4,
+        PageSize: 12,
         ReportTermType: 2,
         ReportType: 'BCTQ',
         Unit: 1,
@@ -390,9 +422,14 @@ export async function retrieveVietstock({
     if (result.status === 'fulfilled') data[requests[index][0]] = result.value;
     else gaps.push(requests[index][0]);
   });
+  const quarterly = await quarterlyHistory(session, company.ticker, data.quarterly, now);
+  if (signal?.aborted) throw new Error('Vietstock retrieval cancelled');
   const financials = ['annual', 'quarterly'].flatMap((kind, index) => {
     const id = `D${index + 2}`;
-    const rows = parseVietstockFinancials(data[kind], kind, id, now);
+    const rows =
+      kind === 'quarterly'
+        ? quarterly
+        : parseVietstockFinancials(data[kind], kind, id, now).slice(-4);
     if (rows.length) {
       sources.push({
         id,
@@ -401,7 +438,7 @@ export async function retrieveVietstock({
       });
       for (const row of rows)
         claims.push({
-          text: `Reported ${kind} financial statement (not forecast): period=${row.period}; ${JSON.stringify(row)}`,
+          text: `Reported ${row.kind} financial statement (not forecast): period=${row.period}; ${JSON.stringify(row)}`,
           sourceIds: [id],
         });
     } else if (!gaps.includes(kind)) gaps.push(kind);

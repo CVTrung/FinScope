@@ -44,16 +44,16 @@ export function enrichListingTargets(report) {
 }
 
 export function targetReasoning(row) {
+  const useful = (value) =>
+    typeof value === 'string' &&
+    value.trim() &&
+    !/^(?:n\/?a|unknown|not (?:available|disclosed|provided)|no (?:information|data)|khong (?:co (?:thong tin|du lieu)|duoc cong bo)|chua (?:co (?:thong tin|du lieu)|xac dinh)|khong ro)[.!\s]*$/i.test(
+      normalize(value).trim(),
+    );
+  if (!useful(row.thesis)) return [];
   return [
     ['Thesis', row.thesis],
     ['Valuation assumptions', row.assumptions],
     ['Risks', row.risks],
-  ].filter(
-    ([, value]) =>
-      typeof value === 'string' &&
-      value.trim() &&
-      !/^(n\/?a|unknown|not (?:available|disclosed)|chưa có dữ liệu|không được công bố)$/i.test(
-        value.trim(),
-      ),
-  );
+  ].filter(([, value]) => useful(value));
 }

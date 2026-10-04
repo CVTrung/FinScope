@@ -102,7 +102,9 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
       ? 'annual'
       : view.financials[0]?.kind || 'quarterly',
   );
-  const rows = view.financials.filter((row) => row.kind === period);
+  const rows = view.financials
+    .filter((row) => row.kind === period)
+    .sort((a, b) => b.period.localeCompare(a.period));
   const growth = (report.growth || []).filter((row) => row.kind === period).slice(-2);
   const fields = financialFields.filter(([, key]) => rows.some((row) => Number.isFinite(row[key])));
   const availableSources = [

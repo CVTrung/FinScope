@@ -4,8 +4,10 @@ import {
   parseVietstockFinancials,
   parseVietstockRatios,
   parseVietstockReports,
+  quarterlyHistory,
 } from '../server/vietstock.js';
 import { chartStats } from '../shared/prices.js';
+import { calculateGrowth } from '../server/companyResearch.js';
 const now = new Date('2026-10-04');
 const financialData = (column) => [
   [{ ID: 1, PeriodBegin: '202601', PeriodEnd: '202603', United: 'HN', ...column }],
@@ -17,6 +19,70 @@ const financialData = (column) => [
     ],
   },
 ];
+
+function historyPage(startQuarter, count = 5) {
+  const columns = [],
+    income = { NameEn: 'Net revenue' };
+  for (let offset = 0; offset < count; offset++) {
+    const quarter = startQuarter - offset;
+    const year = 2026 + Math.floor(quarter / 4),
+      q = ((quarter % 4) + 4) % 4;
+    columns.push({
+      ID: offset + 1,
+      PeriodBegin: `${year}${String(q * 3 + 1).padStart(2, '0')}`,
+      PeriodEnd: `${year}${String(q * 3 + 3).padStart(2, '0')}`,
+      United: 'HN',
+    });
+    income[`Value${offset + 1}`] = (100 + quarter) * 1e9;
+  }
+  return [columns, { income: [income] }];
+}
+
+test('bounded pagination retains twelve quarters and matches prior-year values using each page column IDs', async () => {
+  const calls = [];
+  const rows = await quarterlyHistory(
+    {
+      post: async (_, params) => {
+        calls.push(params);
+        return historyPage(params.Page === 2 ? -4 : -9);
+      },
+    },
+    'HPG',
+    historyPage(1),
+    now,
+  );
+  assert.equal(rows.length, 12);
+  assert.deepEqual(
+    calls.map((params) => params.Page),
+    [2, 3],
+  );
+  assert.ok(calls.every((params) => params.PageSize === 12 && params.ReportTermType === 2));
+  const latest = rows.find((row) => row.period === '2026-06-30');
+  const previous = rows.find((row) => row.period === '2025-06-30');
+  assert.equal(latest.revenue, 101);
+  assert.equal(previous.revenue, 97);
+  const growth = calculateGrowth(rows).find((row) => row.period === latest.period);
+  assert.equal(growth.previousPeriod, previous.period);
+  assert.ok(Math.abs(growth.percent - (101 / 97 - 1) * 100) < 1e-8);
+});
+
+test('older-page failures and repeated pages preserve available history without retries', async () => {
+  let calls = 0;
+  for (const post of [
+    async () => {
+      calls++;
+      throw new Error('Unavailable');
+    },
+    async () => {
+      calls++;
+      return historyPage(1);
+    },
+  ]) {
+    const rows = await quarterlyHistory({ post }, 'HPG', historyPage(1), now);
+    assert.equal(rows.length, 5);
+  }
+  assert.equal(calls, 2);
+});
 
 test('direct financial parsing keeps cumulative periods explicitly separate as year to date', () => {
   const rows = parseVietstockFinancials(financialData(), 'quarterly', 'D3', now);

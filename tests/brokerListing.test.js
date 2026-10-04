@@ -43,4 +43,13 @@ test('reasoning contains only populated content rather than unavailable placehol
     ['Thesis', 'Demand recovered'],
   ]);
   assert.deepEqual(targetReasoning({}), []);
+  assert.deepEqual(
+    targetReasoning({
+      thesis: 'Không có thông tin',
+      assumptions: 'Không có thông tin',
+      risks: 'Không có thông tin',
+    }),
+    [],
+  );
+  assert.deepEqual(targetReasoning({ thesis: '', risks: 'Competition' }), []);
 });
