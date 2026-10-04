@@ -1,5 +1,5 @@
 // Vietnamese business, finance and general-news publishers. Subdomains are included.
-// Add or remove domains here; both Tavily and the backend enforce this list.
+// Add or remove domains here; the Google query and backend enforce this list.
 export const newsDomains = [
   'vietstock.vn',
   'cafef.vn',

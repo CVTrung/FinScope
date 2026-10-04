@@ -1,8 +1,17 @@
+import { chartStats } from '../shared/prices.js';
 import { safeUrl, validDate } from '../shared/report.js';
 import { ResearchError } from './research.js';
 import { newsDomains } from '../shared/newsSources.js';
 export { newsDomains } from '../shared/newsSources.js';
 import { newsDateRange, filterNewsDates } from '../shared/news.js';
+import {
+  matchesNewsQuery,
+  buildNewsSearchQuery,
+  resolveNewsCompany,
+} from '../shared/companyAliases.js';
+import { addNewsIntel } from './newsIntel.js';
+import { retrieveVietstockNews } from './vietstock.js';
+import { newsSearchPlan, newsUrlKey } from '../shared/newsPlan.js';
 
 const newsCache = new Map();
 
@@ -14,42 +23,18 @@ const allowedNewsUrl = (value) => {
 };
 
 function isNewsArticle(url, title) {
-  const path = new URL(url).pathname;
+  const parsed = new URL(url);
+  const path = parsed.pathname;
   return (
+    parsed.hostname !== 'finance.vietstock.vn' &&
+    !/^CW[./]/i.test(title) &&
     path !== '/' &&
+    !/\.(pdf|docx?|xlsx?|zip)(?:$|[?#])/i.test(path) &&
     !/\/(tags?|topics?|search|hashtag)(\/|\.|$)/i.test(path) &&
     !/tin tức,? bài viết mới nhất|latest news (about|on)|:.*(công ty|company).*\((HOSE|HNX|UPCoM)\)/i.test(
       title,
     )
   );
-}
-
-function matchesNewsQuery(article, query) {
-  const words = (text) =>
-    String(text)
-      .normalize('NFD')
-      .replace(/\p{M}/gu, '')
-      .replace(/[đĐ]/g, 'd')
-      .toLowerCase()
-      .match(/[a-z0-9]+/g) || [];
-  const ignored = new Set([
-    'cong',
-    'ty',
-    'co',
-    'phan',
-    'tap',
-    'doan',
-    'company',
-    'corporation',
-    'stock',
-    'hose',
-    'hsx',
-    'hnx',
-    'upcom',
-  ]);
-  const terms = words(query).filter((word) => word.length >= 2 && !ignored.has(word));
-  const text = new Set(words(`${article.title} ${article.content || ''}`));
-  return terms.length > 0 && terms.every((term) => text.has(term));
 }
 
 export async function searchNews({
@@ -60,115 +45,178 @@ export async function searchNews({
   fetcher = fetch,
   now = new Date(),
   cache = fetcher === fetch ? newsCache : new Map(),
+  pageFetcher = fetcher === fetch ? fetch : null,
+  vietstockNews = fetcher === fetch ? retrieveVietstockNews : null,
 }) {
-  if (!process.env.TAVILY_API_KEY)
+  if (!resolveNewsCompany(query))
+    throw new ResearchError('Choose a supported Vietnamese company name or stock ticker.', 400);
+  if (!process.env.GOOGLE_NEWS_API_KEY)
     throw new ResearchError(
-      'Tavily is not configured. Add TAVILY_API_KEY to .env and restart the server.',
+      'Google News is not configured. Add GOOGLE_NEWS_API_KEY to .env and restart the server.',
       503,
     );
   const range = newsDateRange(days, now);
+  const plan = newsSearchPlan(query, range, days);
+  const searchQuery = plan[0].query;
+  const warnings = [];
+  let requests = 0;
   const cacheKey = `${language}:${query.trim().toLocaleLowerCase()}:${range.endDate}`;
   const previous = cache.get(cacheKey);
   const cached = previous && now.getTime() - previous.time < 15 * 60000 ? previous : null;
   function result(articles, retrievedAt) {
     return {
       query,
+      searchQuery,
       language,
       days,
       ...range,
-      provider: 'Tavily',
+      provider: 'Google News',
       scope: 'Selected Vietnamese news publishers',
-      processing: 'Tavily search results; original publisher text',
+      processing:
+        'Segmented Google News via SerpApi and public Vietstock listings; original publisher text',
+      searchSegments: plan.map((item) => item.segment),
+      searchRequests: requests,
+      warnings: [...new Set([...(cached?.warnings || []), ...warnings])],
       retrievedAt,
       articles: filterNewsDates(articles, range),
     };
   }
   if (cached?.windows.has(days)) return result(cached.articles, cached.retrievedAt);
-  const response = await fetcher('https://api.tavily.com/search', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.TAVILY_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      topic: 'news',
-      search_depth: 'basic',
-      max_results: 20,
-      start_date: range.startDate,
-      end_date: range.endDate,
-      filter_by_published_date: true,
-      language,
-      include_domains: newsDomains,
-      include_domains_mode: 'restrict',
-      include_images: true,
-      include_image_descriptions: true,
-      include_published_date: true,
-      include_answer: false,
-      include_raw_content: false,
-    }),
-    signal,
-  });
-  if (!response.ok)
-    throw new ResearchError(
-      [401, 403].includes(response.status)
-        ? 'Tavily rejected the API key. Check TAVILY_API_KEY and restart the server.'
-        : [429, 432, 433].includes(response.status)
-          ? 'Tavily search quota has been reached. Try again later or check your Tavily plan.'
-          : 'Tavily news search is unavailable. Please retry.',
-      response.status === 429 ? 429 : 502,
-    );
-  const data = await response.json();
-  if (!Array.isArray(data.results))
-    throw new ResearchError('Tavily returned an unexpected response. Please retry.');
+  const combined = [];
+  let successful = 0;
+  let lastFailure = null;
+  for (const segment of plan) {
+    if (signal?.aborted) throw new ResearchError('News search cancelled.', 499);
+    const endpoint = new URL('https://serpapi.com/search.json');
+    endpoint.search = new URLSearchParams({
+      engine: 'google_news',
+      q: segment.query,
+      gl: 'vn',
+      hl: language,
+      api_key: process.env.GOOGLE_NEWS_API_KEY,
+    });
+    try {
+      requests++;
+      const response = await fetcher(endpoint.toString(), { signal });
+      if (!response.ok)
+        throw new ResearchError(
+          [401, 403].includes(response.status)
+            ? 'Google News rejected the API key. Check GOOGLE_NEWS_API_KEY and restart the server.'
+            : response.status === 429
+              ? 'Google News search quota has been reached. Try again later or check your SerpApi plan.'
+              : 'Google News search is unavailable. Please retry.',
+          response.status === 429 ? 429 : [401, 403].includes(response.status) ? 503 : 502,
+        );
+      const data = await response.json();
+      const empty =
+        typeof data.error === 'string' &&
+        /Google.*(?:hasn't|has not|did not).*results/i.test(data.error);
+      if (data.error && !empty)
+        throw new ResearchError(
+          /quota|exceed|run out|out of searches|no searches left/i.test(data.error)
+            ? 'Google News search quota has been reached. Try again later or check your SerpApi plan.'
+            : 'Google News search is unavailable. Please retry.',
+          /quota|exceed|run out|out of searches|no searches left/i.test(data.error) ? 429 : 502,
+        );
+      if (!empty && !Array.isArray(data.news_results))
+        throw new ResearchError('Google News returned an unexpected response. Please retry.');
+      successful++;
+      combined.push(...(empty ? [] : data.news_results));
+    } catch (error) {
+      lastFailure = error instanceof ResearchError ? error : null;
+      if (signal?.aborted) throw error;
+      if (!successful && [429, 503].includes(error.status)) throw error;
+      warnings.push('Some news search segments were unavailable. Results may be incomplete.');
+      if ([429, 503].includes(error.status)) break;
+    }
+  }
+  if (!successful)
+    throw lastFailure || new ResearchError('Google News search is unavailable. Please retry.');
+  function flatten(items) {
+    return items.flatMap((item) => {
+      if (!item || typeof item !== 'object') return [];
+      return [
+        ...(item.link ? [item] : []),
+        ...flatten(Array.isArray(item.stories) ? item.stories : []),
+      ];
+    });
+  }
   const seen = new Set();
-  const candidates = data.results.flatMap((item) => {
-    const url = allowedNewsUrl(item.url);
+  const candidates = flatten(combined).flatMap((item) => {
+    const url = allowedNewsUrl(item.link);
     if (
       !url ||
-      seen.has(url) ||
+      seen.has(newsUrlKey(url)) ||
       typeof item.title !== 'string' ||
       !item.title.trim() ||
       !isNewsArticle(url, item.title) ||
-      !matchesNewsQuery(item, query)
+      !matchesNewsQuery({ title: item.title, content: item.snippet }, query)
     )
       return [];
-    const date = Date.parse(item.published_date);
+    const rawDate = typeof item.iso_date === 'string' ? item.iso_date : '';
+    const date =
+      /^\d{4}-\d{2}-\d{2}(?:T|$)/.test(rawDate) && validDate(rawDate.slice(0, 10))
+        ? Date.parse(rawDate)
+        : NaN;
     const publishedAt = Number.isFinite(date)
       ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(date))
       : '';
     if (
       !publishedAt ||
       !validDate(publishedAt) ||
-      (/^\d{4}-\d{2}-\d{2}/.test(item.published_date) &&
-        !validDate(item.published_date.slice(0, 10)))
+      publishedAt < range.startDate ||
+      publishedAt > range.endDate
     )
       return [];
-    seen.add(url);
+    seen.add(newsUrlKey(url));
     return [
       {
         title: item.title,
         url,
         publisher: new URL(url).hostname.replace(/^www\./, ''),
-        summary: typeof item.content === 'string' ? item.content : '',
+        summary: typeof item.snippet === 'string' ? item.snippet : '',
         publishedAt,
-        // Only images attached to this exact result; query-wide images may be unrelated.
-        imageUrl:
-          (Array.isArray(item.images) ? item.images : [])
-            .map((image) => safeUrl(typeof image === 'string' ? image : image.url))
-            .find(Boolean) || '',
+        // Only this article's thumbnail; never substitute a publisher logo or cluster image.
+        imageUrl: safeUrl(item.thumbnail) || safeUrl(item.thumbnail_small) || '',
       },
     ];
   });
-  const dated = filterNewsDates(candidates, range);
-  const known = new Map((cached?.articles || []).map((article) => [article.url, article]));
+  if (vietstockNews) {
+    try {
+      const extra = await vietstockNews({ query, signal, now });
+      for (const article of filterNewsDates(extra, range)) {
+        const url = allowedNewsUrl(article.url);
+        if (
+          !url ||
+          seen.has(newsUrlKey(url)) ||
+          !isNewsArticle(url, article.title) ||
+          !matchesNewsQuery({ title: article.title, content: article.summary }, query)
+        )
+          continue;
+        seen.add(newsUrlKey(url));
+        candidates.push(article);
+      }
+    } catch {
+      if (signal?.aborted) throw new ResearchError('News search cancelled.', 499);
+      warnings.push('Supplementary Vietstock news was unavailable.');
+    }
+  }
+  const dated = await addNewsIntel(filterNewsDates(candidates, range), {
+    query,
+    signal,
+    fetcher: pageFetcher,
+  });
+  const known = new Map(
+    (cached?.articles || []).map((article) => [newsUrlKey(article.url), article]),
+  );
   const articles = dated;
-  for (const article of articles) known.set(article.url, article);
+  for (const article of articles) known.set(newsUrlKey(article.url), article);
   const retrievedAt = now.toISOString();
   if (cache.size >= 100 && !cache.has(cacheKey)) cache.delete(cache.keys().next().value);
   cache.set(cacheKey, {
     time: cached?.time ?? now.getTime(),
     retrievedAt,
+    warnings: [...new Set([...(cached?.warnings || []), ...warnings])],
     windows: new Set([...(cached?.windows || []), days]),
     articles: [...known.values()],
   });
@@ -274,6 +322,7 @@ export async function getPriceHistory({
     retrievedAt: now.toISOString(),
     basis: 'Vietstock historical close; adjustment basis not disclosed',
     points,
+    windowStats: chartStats(points),
     sources: [{ id: 'V1', title: `Vietstock · ${ticker} · historical prices`, url }],
   };
   if (fetcher === fetch && points.length) {

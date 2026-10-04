@@ -1,10 +1,14 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 import { createApp } from './app.js';
+import { geminiStatus } from './gemini.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+dotenv.config({ path: resolve(root, '.env'), quiet: true });
+const config = geminiStatus();
+console.log(`Gemini model: ${config.model} (${config.modelSource}; restart after .env changes)`);
 const app = createApp();
 const production = process.argv.includes('--production') || process.env.NODE_ENV === 'production';
 if (production) {

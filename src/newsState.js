@@ -1,4 +1,4 @@
-const storageKey = 'finscope-news-tavily-state';
+const storageKey = 'finscope-news-google-state';
 let memoryState = null;
 
 export function loadNewsState() {

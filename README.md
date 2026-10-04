@@ -1,130 +1,80 @@
 # FinScope
 
-A university company and stock research app. Enter a company on Home; Gemini researches it with Google Search, then the report powers **Market, Analysis, and Price Targets**. Vietstock supplies historical prices, and the independent **News** page searches with Tavily.
-
-The React interface follows the supplied [FinScope Figma design](https://www.figma.com/design/IydUYAwdne91ngMhDFI1oV/FinScope-Frontend-Layout?node-id=0-1). The home search replaces the prototype's navigation-only action. Financial charts are rendered from actual returned data. Vietnamese is the default interface language, with English available in the header.
+A React + Node.js university demonstration app for Vietnamese companies and stocks. Home uses **Gemini with Google Search grounding as the core research engine**, with **at most three GenerateContent requests per company search**, including any manual formatting repair. Vietstock provides historical prices and supporting public evidence. News uses SerpApi Google News independently.
 
 ## Part 1 — Run locally
 
-Use Node.js 22 or newer. From this folder:
+Use Node.js 22 or newer:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open **http://localhost:3000**. One Node.js process serves both the API and the React app. No second terminal, database, account, or separate backend port is needed.
+Open http://localhost:3000. One Node process serves the API and Vite frontend. Backend changes require a server restart; frontend changes use hot reload.
 
-React/CSS edits update through Vite hot reload. Restart `npm run dev` after editing backend or shared server logic. The startup command avoids Node's recursive module watcher, which can restart repeatedly on Vite's generated configuration files on Windows.
-
-Create `.env` in the project root (the existing key is already supported):
+Create the project-root .env file:
 
 ```dotenv
 GEMINI_API_KEY=your_key
-TAVILY_API_KEY=your_tavily_key
-GEMINI_MODEL=gemini-3-flash-preview
+GOOGLE_NEWS_API_KEY=your_serpapi_key
+GEMINI_MODEL=your_available_gemini_model
 PORT=3000
 ```
 
-Spaces around `=` are accepted. Restart the server after changing `.env`. Keep the key in the server environment, never a `VITE_` variable. `.env` is excluded from Git and container uploads.
+Spaces around = are accepted. GEMINI_MODEL is trimmed and used consistently; gemini-3.5-flash-lite is the fallback only when this setting is absent or blank. Existing process/cloud environment variables take precedence over .env. Restart after changes. Keys stay on the Node server, outside VITE variables. .env is excluded from Git and deployment uploads.
 
-## Part 2 — Use the app
+## Part 2 — Research flow
 
-1. Choose **Tiếng Việt** (default) or **English** in the header. The choice is saved in this browser and used for new Gemini research and the language of news sources. Switching language translates an open report with Gemini and refreshes the last news search. Report figures, dates, links, and original evidence stay unchanged; translated reports are cached for the current session.
-2. Enter a company/ticker on **Home**, preferably with its exchange, such as FPT (HOSE). A full search uses **three Gemini calls**: two Google Search research calls and one structured formatting call.
-3. Once research succeeds, Market, Analysis, and Price Targets become available. These pages have no company search form. Return Home to research another company. Opening a saved, completed report from Home also unlocks these pages; reloading starts at Home again.
-4. **Market** automatically retrieves one year of Vietnamese daily closing prices from Vietstock. It supports HOSE/HSX, HNX, and UPCoM. Unsupported listings show an explanation; no alternative source or generated prices are used.
-5. **News** is independent: enter a Vietnamese company or stock, select a time window, and search with Tavily. News uses only Tavily. Search is restricted to the 48 Vietnamese publisher domains listed in `shared/newsSources.js`, with subdomains included. The language selection guides Tavily retrieval; original titles and excerpts are shown without translation. Article images appear beside the text when available. Results are sorted newest first and must have a date in the selected window. Changing the window refreshes the last search automatically. The completed search, window and results are saved in this tab, so they survive page navigation and reload without repeating the search. It works without a Home report and requires only `TAVILY_API_KEY`.
-6. Open source badges and **Sources & methods** to inspect Gemini evidence. **Export report** downloads the Gemini research snapshot as JSON; independently retrieved prices and news are not included in that export.
-7. The latest five Gemini reports are saved in this browser. Clear history removes the saved list; the open report remains available until reload. There is no cloud database.
+1. Choose Vietnamese (default) or English and enter a company/ticker and exchange.
+2. One mandatory Gemini Google Search call researches identity, financials and business analysis. Usable source links and response text are required. If sentence-level mappings are absent, the section remains visible as **sources provided; individual claims not verified**. Gemini 2.5 calls use Search separately from structured JSON.
+3. Retrieve supporting Vietstock financials, ratios, original PDFs and historical closing prices. Supporting retrieval can fail without discarding valid grounded company evidence. Reputable secondary publishers, including Vietstock and CafeF, are accepted when original filings are unavailable. Conflicting grounded/direct financial figures remain separate with their sources; banking formats remain unavailable when the parser cannot identify them.
+4. Make a second grounded broker-report search only when valuation is relevant to a listing and the core evidence does not already cover targets. It can be skipped. A final structured formatting call combines mapped claims and supporting evidence.
+5. Validate source IDs, company identity, dates, reported periods, units/currency, numeric evidence and individual broker targets in Node. No separate Gemini audit call. Annual, standalone quarterly and YTD records remain distinct, with units and accounting scopes explicitly labeled. Missing fields remain unavailable without removing the useful record. Older evidence includes its date and freshness label. Conflicts retain each sourced figure and an explanation; they are never silently averaged. Unsupported numbers, wrong-company data, invalid sources and impossible dates are rejected. Growth uses only matching, sufficiently attributable periods. These checks do not independently verify the publisher.
+6. Every attempted GenerateContent call counts, including failed, truncated and malformed output. The server stops at **three calls**. There are no automatic retries, model switches or repair calls. On a later-stage failure, available supporting facts/chart remain visible with a warning. A manual formatting continuation can reuse the snapshot only when an unused slot remains; it shares the original budget and never repeats Search or provider retrieval. After the budget is exhausted, the UI asks for a new explicit Home search. Core Search failure returns a clear error.
+7. Successful results and partial snapshots cache for **30 minutes** (maximum 50). Provider retrieval caches for 15 minutes. Language changes do not secretly call Gemini: interface labels change, existing research text retains its original language with a notice; use an explicit Home search for research in a different language. Browser-saved reports remain readable without new research. Cache loss/expiry means a new search is needed for server continuation.
 
-## Part 3 — How research works
+Stage budgets are 16,000 tokens for company research, 12,000 for broker research and 20,000 for formatting, clamped to both the configured model's reported output limit and the **36,000-token ceiling**. A cached SDK model-metadata lookup is not a GenerateContent/inference request. Thinking tokens consume the output allowance: Gemini 2.5 uses a 2,048 thinking budget for Search and zero for Flash/Lite formatting (Pro retains its required minimum 128); Gemini 3 uses LOW thinking. Thinking budgets guide allocation rather than promising an exact token count. Token usage is recorded by stage. No API tier is guessed from the key: run a live grounding probe with the current credentials to confirm actual access. A successful probe confirms current access, not future capacity or a named billing tier.
 
-```text
-React form → POST /api/research → Node.js
-  ├─ Gemini + Google Search: company and financials
-  └─ Gemini + Google Search: brokerage reports
-           ↓
-Gemini JSON formatting (only the gathered evidence, no new search)
-           ↓
-Zod validation + source/date checks + code-owned calculations
-           ↓
-One report → Market / Analysis / Price Targets
-Market → GET /api/prices → Vietstock public historical chart
-News → POST /api/news → Tavily → domain/date checks → original articles
-Language switch → POST /api/translate-report → Gemini text translation
-```
+The latest five reports are saved in browser storage. Opening a saved report does not run research again. Embedded price snapshots remain dated snapshots; if unavailable, the chart can independently retry Vietstock. Changing 1W/1M/3M/6M/1Y filters existing prices. Missing coverage and original document/report links are expandable. Empty peer grids and target statistic cards are omitted.
 
-The two-stage search/formatting approach also works with Gemini 2.5, where Search and JSON output are not combined in a single request. Gemini remains the core financial analysis provider. Vietstock supplies price history and Tavily supplies standalone news, as requested.
+Target statistics use the latest eligible target per firm, supported report dates and confirmed share-basis comparability. Listing dates are labeled separately. Partial reports and dated targets with unknown comparability remain visible, but unknown comparability, conflicting values and unmapped claims are excluded from consensus/upside. The statistics window does not hide older evidence. Source titles and original evidence retain publisher wording.
 
-- Date and timezone context comes from server code, not the model's memory.
-- Citations use source IDs mapped to actual Google grounding URLs. Unknown IDs are removed. The evidence drawer retains original search text and grounding claim mappings.
-- Google search suggestions returned by the API are available below the results, inside sandboxed frames.
-- Unknown financial figures remain null. Unsourced numeric financial rows and invalid quotes are suppressed. Reported net margins that conflict with their revenue/net-income rows are omitted with an explanation.
-- Price charts use the public Vietstock EOD chart endpoint, opening an anonymous page session and submitting its normal verification token. Prices remain in whole VND as returned. The endpoint does not disclose adjustment basis, so these prices do not replace the dated Gemini quote used for target comparability. Successful history requests are cached in server memory for 15 minutes (up to 100 tickers). No login bypass is used; provider unavailability appears as a retryable error.
-- News uses Tavily’s news topic with Today, 3/7/14/30-day and 3/6/12/24-month windows. Date boundaries use Asia/Ho_Chi_Minh, with calendar-month subtraction for month/year choices. Explicit start/end dates and the provider date filter are sent to Tavily; the backend also removes undated, invalid, future and out-of-window results. Searches are restricted to an editable list of 48 Vietnamese business and general-news publishers using Tavily `include_domains_mode: restrict`; the backend checks every returned hostname too. The `language` parameter guides Vietnamese/English retrieval; article text is not automatically translated and may differ from the interface language. The strict provider language filter is omitted because it suppressed all results in live Vietnamese checks. Titles and excerpts remain in the original source language. No Gemini call is used for search, filtering, summarization, translation or images. Domain restriction focuses coverage on Vietnam but cannot certify every company nationality or semantic match. Basic checks exclude recognizable home/tag/profile pages and require distinctive query words in the title or excerpt. Undated articles are excluded from date-filtered News. Tavily dates are estimates and may represent an update rather than the original publication. Search is ranked and limited to 20 candidates per request, so results are not an exhaustive news archive. A 15-minute server cache combines confirmed articles across searched windows for the same topic/language, keeping already-found recent articles when widening the window. Images come only from Tavily’s per-result images; query-wide images are ignored because they may be unrelated. Missing/blocked images have a placeholder. No publisher page is fetched for images. API keys stay in Node.js.
-- Financial periods are standalone quarterly or annual periods, ordered by period-end date. Cash conversion is computed only when cash flow and net income have a matching known accounting scope.
-- Target summaries use the latest report per firm within the selected window, explicit positive targets, source references, and confirmed comparable currency/share basis. A generic “per share” label is insufficient. Missing targets are never zero. Median and market differences are calculated in JavaScript.
-- Failed research sections are disclosed. If all searches fail, lack grounding, or JSON formatting fails, the app shows an error instead of a fake result.
+## Part 3 — Independent News
 
-Search grounding improves traceability, but does not independently audit financial accuracy. Review original filings, units, restatements, consolidation changes, and publication dates. This is an educational research tool, not a live quote terminal or investment recommendation engine.
+News requires a supported Vietnamese company name or ticker and GOOGLE_NEWS_API_KEY issued by SerpApi. It makes up to four bounded Google News searches per uncached query/window: general company coverage, financial results, corporate actions and older-window or Vietstock coverage. Public Vietstock articles supplement results when accessible. Domain, company relevance and date filters apply; results are deduplicated and sorted newest first. Optional article excerpts/images remain source material, never proof of numeric financials or target prices.
+
+Select a time window and press Search News. Changing the window alone does not search. Results persist across navigation/reload and server searches cache for 15 minutes. News does not call Gemini or require a Home report.
+
+News excludes downloadable disclosure files and distinguishes FPT Corporation from FPT Retail/Shop-only coverage. If the backend is unreachable, the interface asks you to start the local server and retry. Use the actual port printed at startup; an old browser tab on a different port will not reach this server.
 
 ## Part 4 — Production / AI Studio / Cloud Run
-
-Test the same production entry point locally:
 
 ```sh
 npm run build
 npm start
 ```
 
-`npm run build` creates the React assets in `dist/`. **The Node.js server is still required** for Gemini, Tavily, and Vietstock requests; publishing only `dist/` will not work.
+The build produces dist/, but the Node server is still required for providers and analysis. Static-only hosting will not work. The existing Dockerfile builds React and runs the Node service on 0.0.0.0 using the platform PORT.
 
-This project uses the React + Node.js stack documented for [Google AI Studio full-stack apps](https://ai.google.dev/gemini-api/docs/aistudio-build-mode). Google documents [deployment from AI Studio to Cloud Run](https://ai.google.dev/gemini-api/docs/aistudio-deploying).
+Import source files and package-lock.json into the supported AI Studio project workflow; exclude .env, node_modules and artifacts. Set GEMINI_API_KEY, GOOGLE_NEWS_API_KEY and GEMINI_MODEL as server-side secrets/environment. Use npm run dev for preview, npm run build for build, and npm start for production. Allow up to 600 seconds for the bounded grounded workflow.
 
-For AI Studio:
-
-1. Import this project through the supported project/GitHub import workflow available in your AI Studio interface. Include source files and `package-lock.json`; exclude `.env`, `node_modules`, and `artifacts`.
-2. Add `GEMINI_API_KEY` and `TAVILY_API_KEY` to the server-side secrets/environment. Set `GEMINI_MODEL` if your key uses another Search-capable Gemini model.
-3. Use `npm run dev` for preview, `npm run build` for the frontend build, and `npm start` for production.
-4. Deploy using AI Studio's Cloud Run flow. The app listens on `0.0.0.0` and honors the supplied `PORT`. Allow at least **300 seconds** for a research request at the hosting/proxy layer.
-
-A multi-stage `Dockerfile` is included for Cloud Run or another Node container host:
+For a classroom Cloud Run deployment, use one instance if cached analysis retry must survive navigation reliably. Provider caches and analysis snapshots are process memory and disappear on restart; they are not a database. Multiple instances can return cache-expired responses because requests may reach another instance. Browser-saved facts remain available. Cloud execution has not been verified in this workspace.
 
 ```sh
 docker build -t finscope .
 docker run --rm -p 8080:8080 --env-file .env finscope
 ```
 
-If `.env` defines `PORT=3000`, override it for this container command with `-e PORT=8080`. In cloud deployment, configure the API key as a runtime secret; do not bake it into the image. Cloud storage is unnecessary because reports are returned to the browser, not written to the container.
-
-Cloud deployment is prepared but is **not automatically published** by local setup. AI Studio import behavior, Cloud Run deployment, and Docker execution must be verified in the destination environment.
-
-## Part 5 — Checks and project map
+## Part 5 — Verify
 
 ```sh
-npm test              # Offline API, Gemini, Tavily, and Vietstock tests
-npm run build        # Production frontend build
-npm run test:live     # Real Gemini FPT research; consumes API/Search quota
+npm test
+npm run build
+npm run test:live -- "FPT (HOSE)"
+npm run test:news:live
 ```
 
-The live script saves a private local test artifact at `artifacts/live-report.json` and prints counts, never the key. Pass another company after `--` if desired.
+The company live check uses up to three GenerateContent requests and saves artifacts/live-grounded-report.json, including stage token usage and report status. The separate npm run test:grounding:live command makes one small diagnostic Search request using the configured model/key; it is not part of a Home search. The News check consumes SerpApi quota without Gemini calls.
 
-| Location                      | Responsibility                                                   |
-| ----------------------------- | ---------------------------------------------------------------- |
-| `server/index.js`             | One-port development and production entry point                  |
-| `server/app.js`               | Health endpoint, streamed research API, cancellation, errors     |
-| `server/research.js`          | Gemini prompts, Search grounding, structured report generation   |
-| `shared/report.js`            | Report contract, source/date validation, financial calculations  |
-| `src/App.jsx`                 | Routing, research progress, browser history, shared report state |
-| `src/pages.jsx`               | Home, Market, Analysis, and Price Targets                        |
-| `server/localization.js`      | Gemini report text translation                                   |
-| `src/useReportLanguage.js`    | Translation loading, retry, cancellation and session cache       |
-| `src/News.jsx`                | Independent Tavily news page                                     |
-| `src/i18n.jsx`, `src/vi.json` | English/Vietnamese UI and localized dates/numbers                |
-| `server/providers.js`         | Tavily news and Vietstock history adapters                       |
-| `src/components.jsx`          | Reusable cards, source links, charts, dialogs, export            |
-| `src/styles.css`              | Figma colors, typography, layouts, responsive breakpoints        |
-| `tests/`                      | API, provider orchestration, and financial edge cases            |
-
-No login or production access-control system is included, as requested for the university demonstration.
+See VERIFICATION.md for current offline, live and browser evidence. This app is for education; reported figures and AI interpretations must be checked against original publications before any consequential use.

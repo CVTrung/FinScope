@@ -91,7 +91,7 @@ test('future, negative, incompatible and duplicate price observations are remove
   const result = cleanReport(report, sources, report.generatedAt);
   assert.equal(result.priceHistory.length, 1);
 });
-test('inconsistent reported net margin is removed and explained', () => {
+test('inconsistent reported net margin is retained with a reconciliation explanation', () => {
   const report = fixture();
   report.financials = [
     {
@@ -108,7 +108,7 @@ test('inconsistent reported net margin is removed and explained', () => {
     },
   ];
   const result = cleanReport(report, sources, report.generatedAt);
-  assert.equal(result.financials[0].netMargin, null);
+  assert.equal(result.financials[0].netMargin, 20);
   assert.ok(result.limitations.some((item) => item.includes('does not reconcile')));
 });
 test('cash conversion requires comparable accounting scope and orders periods chronologically', () => {

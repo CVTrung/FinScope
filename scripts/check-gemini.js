@@ -8,7 +8,12 @@ try {
     onProgress: (event) => console.log(event.message),
   });
   await mkdir('artifacts', { recursive: true });
-  await writeFile('artifacts/live-report.json', JSON.stringify(report, null, 2));
+  const complete = report.analysisStatus.state === 'ready';
+  const output = complete
+    ? 'artifacts/live-grounded-report.json'
+    : 'artifacts/live-grounded-partial.json';
+  await writeFile(output, JSON.stringify(report, null, 2));
+  if (!complete) process.exitCode = 2;
   console.log(
     JSON.stringify(
       {
@@ -17,14 +22,22 @@ try {
         financialPeriods: report.financials.length,
         language: report.language,
         targets: report.targets.length,
+        analysisStatus: report.analysisStatus,
+        workflow: report.workflow,
+        requestUsage: report.requestUsage,
+        historicalPrices: report.priceData?.points?.length || 0,
+        growthRows: report.growth.length,
         note: 'Price history and news use their separate provider endpoints.',
-        output: 'artifacts/live-report.json',
+        output,
       },
       null,
       2,
     ),
   );
 } catch (error) {
-  console.error(publicError(error).message);
+  const safe = publicError(error);
+  await mkdir('artifacts', { recursive: true });
+  await writeFile('artifacts/live-research-error.json', JSON.stringify(safe, null, 2));
+  console.error(safe.message);
   process.exitCode = 1;
 }

@@ -1,4 +1,5 @@
-import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import { ThinkingLevel } from '@google/genai';
+import { geminiModel, generateGemini } from './gemini.js';
 import { z } from 'zod';
 import { ResearchError } from './research.js';
 
@@ -6,23 +7,25 @@ export async function generateJson({ prompt, schema, signal, client }) {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   if (!client && !apiKey)
     throw new ResearchError('Add GEMINI_API_KEY to the .env file, then restart the server.', 503);
-  const ai = client || new GoogleGenAI({ apiKey });
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-  const response = await ai.models.generateContent({
-    model,
-    contents: prompt,
-    config: {
-      responseMimeType: 'application/json',
-      responseJsonSchema: z.toJSONSchema(schema),
-      temperature: 0.1,
-      maxOutputTokens: 20000,
-      ...(model.startsWith('gemini-3')
-        ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } }
-        : {}),
-      abortSignal: signal,
-      httpOptions: { timeout: 120000 },
+  const model = geminiModel();
+  const response = await generateGemini(
+    {
+      model,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseJsonSchema: z.toJSONSchema(schema),
+        temperature: 0.1,
+        maxOutputTokens: 20000,
+        ...(model.startsWith('gemini-3')
+          ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } }
+          : {}),
+        abortSignal: signal,
+        httpOptions: { timeout: 120000 },
+      },
     },
-  });
+    { client, apiKey },
+  );
   try {
     return schema.parse(JSON.parse(response.text));
   } catch {

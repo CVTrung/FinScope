@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { ResearchError } from '../server/research.js';
 import { createApp } from '../server/app.js';
 
 async function withServer(research, run) {
@@ -70,7 +71,47 @@ test('API returns actionable quota errors in JSON and streaming modes', async ()
         });
         const result = await response.json();
         assert.match(result.error, /quota/);
+        assert.match(result.error, /wait and try again/);
+        assert.equal(result.gemini.retryAfterSeconds, 10);
+        if (!streaming) assert.equal(response.headers.get('retry-after'), '10');
+        if (streaming) assert.equal(result.status, 429);
         assert.equal(response.status, streaming ? 200 : 429);
+      }
+    },
+  );
+});
+
+test('grounding diagnostics reach JSON and streamed errors without exposing answer content', async () => {
+  await withServer(
+    async () => {
+      const error = new ResearchError(
+        'Gemini returned source links without usable claim citations. Please try again; no unchecked report was saved.',
+      );
+      error.diagnostics = [{ stage: 'financials', usableSources: 1, mappedClaims: 0 }];
+      throw error;
+    },
+    async (base) => {
+      for (const streaming of [false, true]) {
+        const response = await fetch(`${base}/api/research`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: streaming ? 'application/x-ndjson' : 'application/json',
+          },
+          body: JSON.stringify({ query: 'FPT' }),
+        });
+        const body = await response.text();
+        const result = streaming
+          ? body
+              .trim()
+              .split('\n')
+              .map(JSON.parse)
+              .find((item) => item.type === 'error')
+          : JSON.parse(body);
+        assert.match(result.error, /without usable claim citations/);
+        assert.equal(result.diagnostics[0].usableSources, 1);
+        assert.equal(result.diagnostics[0].mappedClaims, 0);
+        assert.ok(!body.includes('private'));
       }
     },
   );
@@ -82,7 +123,7 @@ test('news and history endpoints work without a Gemini report; research defaults
     research: async ({ language }) => ({ language }),
     news: async (input) => {
       calls.push(input);
-      return { articles: [], provider: 'Tavily' };
+      return { articles: [], provider: 'Google News' };
     },
     prices: async (input) => {
       calls.push(input);
@@ -99,10 +140,19 @@ test('news and history endpoints work without a Gemini report; research defaults
       body: JSON.stringify(body),
     });
   try {
-    assert.equal((await (await post('/api/news', { query: 'FPT' })).json()).provider, 'Tavily');
+    assert.equal(
+      (await (await post('/api/news', { query: 'FPT' })).json()).provider,
+      'Google News',
+    );
     assert.equal(calls[0].language, 'vi');
     assert.equal(calls[0].days, 30);
     assert.equal((await post('/api/news', { query: 'X' })).status, 400);
+    for (const query of ['inflation', 'stock market', 'FPT cats']) {
+      const rejected = await post('/api/news', { query });
+      assert.equal(rejected.status, 400);
+      assert.match((await rejected.json()).error, /supported Vietnamese company/);
+    }
+    assert.equal(calls.length, 1); // Invalid topics never reach the provider.
     assert.equal(
       (await (await fetch(base + '/api/prices?ticker=FPT&exchange=HOSE')).json()).provider,
       'Vietstock',

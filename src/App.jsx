@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { requestError } from './requestError.js';
 import { Link, NavLink, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Check, LoaderCircle, ArrowUpRight } from 'lucide-react';
 import { reportSchema, cleanReport } from '../shared/report.js';
 import { Card, Modal, Evidence, ExportButton, SearchSuggestions } from './components.jsx';
-import { Home, Market, Analysis, Targets } from './pages.jsx';
+import { Home, CompanyReport } from './pages.jsx';
 import News from './News.jsx';
 import { useLanguage } from './i18n.jsx';
 import { useReportLanguage } from './useReportLanguage.js';
@@ -40,15 +41,32 @@ export default function App() {
     displayed: displayReport,
     error: translationError,
     retry: retryTranslation,
-  } = useReportLanguage(report, language, location.pathname !== '/news');
+  } = useReportLanguage(report, language, location.pathname === '/report');
   const [busy, setBusy] = useState(false);
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
   const [storageWarning, setStorageWarning] = useState('');
   const [modal, setModal] = useState(null);
+  const [geminiError, setGeminiError] = useState(null);
+  const [groundingDiagnostics, setGroundingDiagnostics] = useState([]);
+  const [errorStatus, setErrorStatus] = useState(null);
+  const [retryRemaining, setRetryRemaining] = useState(0);
+  const [lastRequest, setLastRequest] = useState(null);
   const [health, setHealth] = useState(null);
   const controller = useRef(null);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (errorStatus !== 429) {
+      setRetryRemaining(0);
+      return;
+    }
+    const seconds = Number(geminiError?.retryAfterSeconds) || 10;
+    const deadline = Date.now() + seconds * 1000;
+    const update = () => setRetryRemaining(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [errorStatus, geminiError]);
   useEffect(() => {
     fetch('/api/health')
       .then((response) => response.json())
@@ -64,14 +82,18 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   async function research(query, reportLanguage = language) {
-    if (busy) return;
+    if (busy || retryRemaining > 0) return;
+    setLastRequest({ query, language: reportLanguage });
     setBusy(true);
     setError('');
+    setGeminiError(null);
+    setGroundingDiagnostics([]);
+    setErrorStatus(null);
     setEvents([]);
     const requestController = new AbortController();
     controller.current = requestController;
     let finished = false;
-    const timeout = setTimeout(() => requestController.abort('timeout'), 285000);
+    const timeout = setTimeout(() => requestController.abort('timeout'), 610000);
     try {
       const response = await fetch('/api/research', {
         method: 'POST',
@@ -87,6 +109,9 @@ export default function App() {
       });
       if (!response.ok) {
         const data = await response.json();
+        setGeminiError(data.gemini || null);
+        setGroundingDiagnostics(data.diagnostics || []);
+        setErrorStatus(response.status);
         throw new Error(data.error || 'Research failed. Please retry.');
       }
       const reader = response.body.getReader();
@@ -95,7 +120,12 @@ export default function App() {
       function handle(line) {
         if (!line.trim()) return;
         const event = JSON.parse(line);
-        if (event.type === 'error') throw new Error(event.error);
+        if (event.type === 'error') {
+          setGeminiError(event.gemini || null);
+          setGroundingDiagnostics(event.diagnostics || []);
+          setErrorStatus(event.status || event.gemini?.status || null);
+          throw new Error(event.error);
+        }
         if (event.type === 'progress') setEvents((previous) => [...previous, event]);
         if (event.type === 'result') {
           reportSchema.parse(event.report);
@@ -115,7 +145,7 @@ export default function App() {
               'This report is available, but browser storage is full or disabled. Export it to keep a copy.',
             );
           }
-          navigate('/market');
+          navigate('/report');
         }
       }
       while (true) {
@@ -139,7 +169,7 @@ export default function App() {
           ? requestController.signal.reason === 'timeout'
             ? 'Research timed out. Please retry with a specific company and exchange.'
             : 'Research cancelled. You can start a new search.'
-          : cause.message || 'Research could not be completed. Please retry.',
+          : requestError(cause),
       );
     } finally {
       clearTimeout(timeout);
@@ -154,6 +184,18 @@ export default function App() {
     } catch {
       /* Storage may be disabled. */
     }
+  }
+  function updateAnalyzedReport(next) {
+    setReport((current) => (current?.id === next.id ? next : current));
+    setHistory((current) => {
+      const updated = current.map((item) => (item.id === next.id ? next : item));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      } catch {
+        /* Optional local persistence. */
+      }
+      return updated;
+    });
   }
   const openEvidence = () => setModal('evidence');
   return (
@@ -171,12 +213,10 @@ export default function App() {
           <nav aria-label={t('Main navigation')}>
             {[
               ['/', 'Home'],
-              ['/market', 'Market'],
+              ['/report', 'Company report'],
               ['/news', 'News'],
-              ['/analysis', 'Analysis'],
-              ['/targets', 'Price Targets'],
             ].map(([path, label]) =>
-              !report && ['/market', '/analysis', '/targets'].includes(path) ? (
+              !report && path === '/report' ? (
                 <span
                   key={path}
                   className="nav-disabled"
@@ -216,14 +256,14 @@ export default function App() {
                 ? t('Cannot reach the Node.js server. Start the app with npm run dev.')
                 : location.pathname === '/news'
                   ? t(
-                      'Tavily is not configured. Add TAVILY_API_KEY to .env and restart the server.',
+                      'Google News is not configured. Add GOOGLE_NEWS_API_KEY to .env and restart the server.',
                     )
                   : t(
                       'Gemini is not configured. Add GEMINI_API_KEY to .env and restart the server.',
                     )}
             </div>
           )}
-        {report && ['/market', '/analysis', '/targets'].includes(location.pathname) && (
+        {report && location.pathname === '/report' && (
           <Card className="search-strip">
             {report && (
               <div className="report-toolbar">
@@ -252,11 +292,51 @@ export default function App() {
         )}
         {error && (
           <div role="alert" className="notice error">
-            <span>{t(error)}</span>
-            <button className="text-button" onClick={() => setError('')}>
-              {' '}
-              {t('Dismiss')}{' '}
-            </button>
+            <span>
+              {t(error)}
+              {errorStatus === 429 && (
+                <p className="small">
+                  {retryRemaining > 0
+                    ? `${t('Try again in')} ${retryRemaining} ${t('seconds')}. ${t(geminiError?.retryDelaySource === 'provider' ? 'Wait time supplied by Google.' : 'This is a short local wait; Google may still require more time.')}`
+                    : t('You can try again now. If the quota is still reached, try later.')}
+                </p>
+              )}
+              {geminiError && (
+                <details className="small muted">
+                  <summary>{t('Technical details')}</summary>
+                  {t('Model')}: {geminiError.model} · {t('Retry after')}:{' '}
+                  {geminiError.retryAfterSeconds}s
+                  {geminiError.quotaIdentifiers?.length > 0 &&
+                    ' · ' + geminiError.quotaIdentifiers.join(', ')}
+                </details>
+              )}
+              {groundingDiagnostics.length > 0 && (
+                <details className="small muted">
+                  <summary>{t('Technical details')}</summary>
+                  {groundingDiagnostics.map((item) => (
+                    <p key={item.stage}>
+                      {t(
+                        item.stage === 'financials' ? 'Company & financials' : 'Brokerage research',
+                      )}
+                      : {t('Research text')}: {t(item.hasText ? 'Yes' : 'No')} ·{' '}
+                      {t('Usable sources')}: {item.usableSources} · {t('Mapped citations')}:{' '}
+                      {item.mappedClaims} · {t('Search queries')}: {item.searchQueries} ·{' '}
+                      {t('Finish reason')}: {item.finishReason} · {t('Block reason')}:{' '}
+                      {item.blockReason || '—'}
+                    </p>
+                  ))}
+                </details>
+              )}
+            </span>
+            {errorStatus === 429 && lastRequest && (
+              <button
+                className="button"
+                disabled={busy || retryRemaining > 0}
+                onClick={() => research(lastRequest.query, lastRequest.language)}
+              >
+                {t('Try again')}
+              </button>
+            )}
           </div>
         )}
         {storageWarning && (
@@ -288,54 +368,42 @@ export default function App() {
                   ) : (
                     <Check size={15} />
                   )}{' '}
-                  {t(event.message)}
+                  {t(
+                    event.stage === 'organizing'
+                      ? 'Organizing the evidence into your company report.'
+                      : event.message,
+                  )}
                 </p>
               ))}
             </div>
           </Card>
         )}
-        {displayReport?.warnings?.length > 0 &&
-          ['/market', '/analysis', '/targets'].includes(location.pathname) && (
-            <Card className="caution" role="status">
-              <h3>{t('Partial research coverage')}</h3>
-              <ul>
-                {displayReport.warnings.map((warning, index) => (
-                  <li key={index}>{t(warning)}</li>
-                ))}
-              </ul>
-              <p>{t('Available evidence is shown below. Return Home to run a new search.')}</p>
-            </Card>
-          )}
         <Routes>
           <Route
             path="/"
             element={
               <Home
-                hasReport={Boolean(report)}
                 onResearch={research}
                 busy={busy}
+                searchBlocked={retryRemaining > 0}
                 history={history}
                 onSelect={(item) => {
                   setReport(item);
-                  navigate('/market');
+                  navigate('/report');
                 }}
                 onClear={clearHistory}
-                onMethods={() => setModal('methods')}
               />
             }
           />
           {[
             [
-              '/market',
-              <Market key={report?.id} report={displayReport} onEvidence={openEvidence} />,
-            ],
-            [
-              '/analysis',
-              <Analysis key={report?.id} report={displayReport} onEvidence={openEvidence} />,
-            ],
-            [
-              '/targets',
-              <Targets key={report?.id} report={displayReport} onRules={() => setModal('rules')} />,
+              '/report',
+              <CompanyReport
+                key={report?.id}
+                report={displayReport}
+                onEvidence={openEvidence}
+                onUpdateReport={updateAnalyzedReport}
+              />,
             ],
           ].map(([path, page]) => (
             <Route
@@ -366,6 +434,13 @@ export default function App() {
               }
             />
           ))}
+          {['/market', '/analysis', '/targets'].map((path) => (
+            <Route
+              key={path}
+              path={path}
+              element={<Navigate to={report ? '/report' : '/'} replace />}
+            />
+          ))}
           <Route path="/news" element={<News />} />
           <Route
             path="*"
@@ -380,12 +455,10 @@ export default function App() {
             }
           />
         </Routes>
-        {report && ['/market', '/analysis', '/targets'].includes(location.pathname) && (
-          <SearchSuggestions report={report} />
-        )}
+        {report && location.pathname === '/report' && <SearchSuggestions report={report} />}
         <footer>
           <span>{t('FinScope / Economics study project')}</span>
-          <span>{t('Gemini · Vietstock · Tavily · Educational research')}</span>
+          <span>{t('Gemini · Vietstock · Google News · Educational research')}</span>
           <button className="text-button" onClick={() => setModal('methods')}>
             {' '}
             {t('Sources & methodology')}{' '}
@@ -397,47 +470,18 @@ export default function App() {
           title={
             modal === 'evidence' && report
               ? 'Sources & research evidence'
-              : modal === 'rules'
-                ? 'How price targets are compared'
-                : 'From a question to the evidence'
+              : 'From a question to the evidence'
           }
           onClose={() => setModal(null)}
         >
           {modal === 'evidence' && displayReport ? (
             <Evidence report={displayReport} />
-          ) : modal === 'rules' ? (
-            <div className="stack">
-              <p>
-                {' '}
-                {t(
-                  'The summary uses the latest dated report per firm within the selected window. It must disclose a positive target, a supporting source, and a currency and share basis confirmed comparable to the market reference.',
-                )}{' '}
-              </p>
-              <p>
-                {' '}
-                {t(
-                  "Older reports, missing targets, future dates, and incompatible or unknown share bases are excluded. An excluded newer report still supersedes the firm's older reports.",
-                )}{' '}
-              </p>
-              <p>
-                {' '}
-                {t(
-                  'Median and range are calculated from included targets. Difference = (target ÷ dated market price − 1) × 100. Missing values are never treated as zero.',
-                )}{' '}
-              </p>
-              <p>
-                {' '}
-                {t(
-                  'Report horizons can start on different dates. These are third-party opinions, and the difference is not a predicted return.',
-                )}{' '}
-              </p>
-            </div>
           ) : (
             <div className="stack">
               <p>
                 {' '}
                 {t(
-                  'Enter a company on Home. Gemini researches financials and brokerage reports, then organizes Market, Analysis, and Price Targets. Vietstock supplies Vietnamese price history. Search News separately with Tavily.',
+                  'Home uses Gemini with Google Search for company research, an optional broker-report search, and structured formatting. Each search uses at most three Gemini requests. Vietstock supplies price history and supporting evidence. News works independently with Google News.',
                 )}{' '}
               </p>
               <div className="grid two">
@@ -446,7 +490,7 @@ export default function App() {
                   <p>
                     {' '}
                     {t(
-                      'Source badges open Google Search grounding links. Sources & methods includes original research, search queries, and evidence snippets.',
+                      'Source badges open original Vietstock pages and reports. Sources & methods shows the retrieved evidence and missing coverage.',
                     )}{' '}
                   </p>
                 </Card>

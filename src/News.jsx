@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { requestError } from './requestError.js';
 import { useSearchParams } from 'react-router-dom';
 import { Search, ArrowUpRight, LoaderCircle, ImageOff } from 'lucide-react';
 import { Card, Heading, Pill, Empty } from './components.jsx';
@@ -6,6 +7,7 @@ import { useLanguage } from './i18n.jsx';
 import { newsWindows } from '../shared/news.js';
 import { loadNewsState, saveNewsState } from './newsState.js';
 import { newsDomains } from '../shared/newsSources.js';
+import { companyAliases, resolveNewsCompany, matchesNewsQuery } from '../shared/companyAliases.js';
 
 export default function News() {
   const { language, t, formatDate } = useLanguage();
@@ -18,18 +20,18 @@ export default function News() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [searchRequest, setSearchRequest] = useState(null);
-  const visibleResult = result?.language === language ? result : null;
+  const visibleResult =
+    result?.language === language && resolveNewsCompany(result.query)
+      ? {
+          ...result,
+          articles: result.articles.filter((article) =>
+            matchesNewsQuery({ title: article.title, content: article.summary }, result.query),
+          ),
+        }
+      : null;
   useEffect(() => {
     if (result) lastResult.current = result;
-    saveNewsState(
-      lastResult.current
-        ? {
-            query: lastResult.current.query,
-            days: lastResult.current.days,
-            result: lastResult.current,
-          }
-        : { query, days, result: null },
-    );
+    saveNewsState({ query, days, result: lastResult.current });
   }, [query, days, result]);
   useEffect(() => {
     const input =
@@ -42,7 +44,6 @@ export default function News() {
     const timeout = setTimeout(() => request.abort('timeout'), 155000);
     setBusy(true);
     setError('');
-    setResult(null);
     fetch('/api/news', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,6 +53,8 @@ export default function News() {
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
+        if (!Array.isArray(data.articles))
+          throw new Error('Google News returned an unexpected response. Please retry.');
         return data;
       })
       .then((data) => {
@@ -59,7 +62,9 @@ export default function News() {
       })
       .catch((cause) => {
         if (!request.signal.aborted || request.signal.reason === 'timeout')
-          setError(request.signal.aborted ? 'News search timed out. Please retry.' : cause.message);
+          setError(
+            request.signal.aborted ? 'News search timed out. Please retry.' : requestError(cause),
+          );
       })
       .finally(() => {
         clearTimeout(timeout);
@@ -72,15 +77,19 @@ export default function News() {
   }, [searchRequest, language]);
   function search(event) {
     event.preventDefault();
+    if (!resolveNewsCompany(query)) {
+      setError('Choose a supported Vietnamese company name or stock ticker.');
+      return;
+    }
     if (query.trim().length >= 2 && !busy) setSearchRequest({ query: query.trim(), days });
   }
   return (
     <>
       <Heading
         title={t('Find the story behind the movement')}
-        subtitle={t('News about Vietnamese companies and stocks, searched with Tavily.')}
+        subtitle={t('News about Vietnamese companies and stocks, searched with Google News.')}
       >
-        <Pill>TAVILY SEARCH</Pill>
+        <Pill>GOOGLE NEWS</Pill>
       </Heading>
       <Card>
         <form className="filter-row" onSubmit={search}>
@@ -94,18 +103,21 @@ export default function News() {
               minLength={2}
               maxLength={200}
               required
+              list="news-companies"
               disabled={busy}
             />
           </label>
+          <datalist id="news-companies">
+            {Object.entries(companyAliases).map(([ticker, names]) => (
+              <option key={ticker} value={ticker}>
+                {names[0]}
+              </option>
+            ))}
+          </datalist>
           <select
             aria-label={t('News publication window')}
             value={days}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setDays(value);
-              const previous = searchRequest || lastResult.current;
-              if (previous) setSearchRequest({ query: previous.query, days: value });
-            }}
+            onChange={(e) => setDays(Number(e.target.value))}
             disabled={busy}
           >
             {newsWindows.map((window) => (
@@ -121,7 +133,12 @@ export default function News() {
         </form>
         <p className="small muted">
           {t(
-            'Search selected Vietnamese publishers with Tavily. Your language choice guides retrieval; article text stays original.',
+            'Company or stock searches only. Choose a time window, then click Search news to apply it.',
+          )}
+        </p>
+        <p className="small muted">
+          {t(
+            'Search selected Vietnamese publishers with Google News. Your language choice guides retrieval; article text stays original.',
           )}
         </p>
         <details className="small muted">
@@ -141,7 +158,7 @@ export default function News() {
           {t(error)}
         </div>
       )}
-      {busy && <Card role="status">{t('Searching news with Tavily…')}</Card>}
+      {busy && <Card role="status">{t('Searching news with Google News…')}</Card>}
       {visibleResult && (
         <Heading
           title={`${visibleResult.articles.length} ${t('articles')} · ${visibleResult.query}`}
@@ -162,7 +179,7 @@ export default function News() {
                   {article.title} <ArrowUpRight size={17} />
                 </a>
               </h2>
-              <p>{article.summary}</p>
+              {article.summary && <p className="news-intel">{article.summary}</p>}
               <a className="text-button" href={article.url} target="_blank" rel="noreferrer">
                 {t('Read original article')} <ArrowUpRight size={14} />
               </a>

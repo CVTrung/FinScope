@@ -28,27 +28,27 @@ test('date filtering removes unknown, future and out-of-window news and sorts ne
 });
 
 test('wider ranked searches retain known recent articles and repeated windows reuse the cache', async () => {
-  const key = process.env.TAVILY_API_KEY;
-  process.env.TAVILY_API_KEY = 'test-key';
+  const key = process.env.GOOGLE_NEWS_API_KEY;
+  process.env.GOOGLE_NEWS_API_KEY = 'test-key';
   const cache = new Map();
   const requests = [];
   const dates = ['2026-10-01', '2026-09-15', '2026-04-02'];
   const fetcher = async (url, options) => {
-    if (url !== 'https://api.tavily.com/search') return new Response('', { status: 404 });
-    requests.push(JSON.parse(options.body));
-    const index = requests.length - 1;
+    if (new URL(url).hostname !== 'serpapi.com') return new Response('', { status: 404 });
+    requests.push(new URL(url).searchParams);
+    const index = Math.floor((requests.length - 1) / 4);
     return Response.json({
-      results: [
+      news_results: [
         {
           title: `FPT ${index}`,
-          url: `https://cafef.vn/story-${index}`,
-          content: 'FPT Vietnam',
-          published_date: dates[index],
+          link: `https://cafef.vn/story-${index}`,
+          snippet: 'FPT Vietnam',
+          iso_date: dates[index],
         },
-        { title: 'Undated', url: 'https://cafef.vn/unknown', content: 'FPT Vietnam' },
-        { title: 'Future', url: 'https://cafef.vn/future', published_date: '2026-10-04' },
-        { title: 'Old', url: 'https://cafef.vn/old', published_date: '2023-01-01' },
-        { title: 'Invalid', url: 'https://cafef.vn/invalid', published_date: '2026-02-30' },
+        { title: 'Undated', link: 'https://cafef.vn/unknown', snippet: 'FPT Vietnam' },
+        { title: 'Future', link: 'https://cafef.vn/future', iso_date: '2026-10-04' },
+        { title: 'Old', link: 'https://cafef.vn/old', iso_date: '2023-01-01' },
+        { title: 'Invalid', link: 'https://cafef.vn/invalid', iso_date: '2026-02-30' },
       ],
     });
   };
@@ -78,12 +78,12 @@ test('wider ranked searches retain known recent articles and repeated windows re
       dates,
     );
     assert.deepEqual((await search(7)).articles, week.articles);
-    assert.equal(requests.length, 3);
-    assert.equal(requests[2].start_date, '2025-10-03');
-    assert.equal(requests[0].max_results, 20);
+    assert.equal(requests.length, 12);
+    assert.ok(requests[8].get('q').includes('after:2025-10-02'));
+    assert.equal(requests[0].get('engine'), 'google_news');
   } finally {
-    if (key === undefined) delete process.env.TAVILY_API_KEY;
-    else process.env.TAVILY_API_KEY = key;
+    if (key === undefined) delete process.env.GOOGLE_NEWS_API_KEY;
+    else process.env.GOOGLE_NEWS_API_KEY = key;
   }
 });
 

@@ -37,7 +37,8 @@ export const reportSchema = z.object({
   financials: z.array(
     z.object({
       period: text,
-      kind: z.enum(['annual', 'quarterly']),
+      kind: z.enum(['annual', 'quarterly', 'ytd']),
+      periodStart: text.default(''),
       currency: text,
       unit: text,
       profitBasis: z
@@ -150,6 +151,9 @@ export function summarizeTargets(report, days = 90) {
     else if ((now - date) / 86400000 > days) reason = `Older than ${days} days`;
     else if (!(target.target > 0)) reason = 'No explicit target';
     else if (!target.sourceIds.length) reason = 'No supporting source';
+    else if (target.evidenceStatus === 'sources-only')
+      reason = 'Sources provided; individual claims not verified';
+    else if (target.conflictGroup) reason = 'Conflicting sourced figures';
     else if (/consensus|average|median/i.test(target.firm))
       reason = 'Aggregate estimate, not an individual research firm';
     else if (
@@ -185,6 +189,22 @@ export function summarizeTargets(report, days = 90) {
 
 export function cleanReport(input, sources, generatedAt) {
   const report = reportSchema.parse(input);
+  // Keep code-owned provenance when a saved report is sanitized on browser reload.
+  const provenance = (row, original) => {
+    if (['direct', 'claim-mapped', 'sources-only'].includes(original?.evidenceStatus))
+      row.evidenceStatus = original.evidenceStatus;
+    if (typeof original?.conflictGroup === 'string') row.conflictGroup = original.conflictGroup;
+    if (typeof original?.title === 'string') row.title = original.title;
+    if (validDate(original?.listedAt) && new Date(original.listedAt) <= new Date(generatedAt))
+      row.listedAt = original.listedAt;
+  };
+  provenance(report.company, input.company);
+  provenance(report.quote, input.quote);
+  for (const field of ['financials', 'targets', 'metrics'])
+    report[field].forEach((row, index) => provenance(row, input[field][index]));
+  report.analysis.observations.forEach((row, index) =>
+    provenance(row, input.analysis.observations[index]),
+  );
   const allowed = new Set(sources.map((source) => source.id));
   function clean(value) {
     if (!value || typeof value !== 'object') return;
@@ -240,9 +260,8 @@ export function cleanReport(input, sources, generatedAt) {
       row.netIncome !== null &&
       Math.abs(row.netMargin - (row.netIncome / row.revenue) * 100) > 0.5
     ) {
-      row.netMargin = null;
       report.limitations.push(
-        `Net margin for ${row.period} was omitted because it does not reconcile with the reported revenue and net income; profit definitions may differ.`,
+        `Reported net margin for ${row.period} does not reconcile with the reported revenue and net income; profit definitions may differ. The sourced value is retained separately from a calculated margin.`,
       );
     }
   }

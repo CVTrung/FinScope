@@ -1,15 +1,24 @@
 import express from 'express';
-import { researchCompany, publicError, ResearchError } from './research.js';
+import { geminiStatus } from './gemini.js';
+import {
+  researchCompany,
+  retryCompanyAnalysis,
+  localizeCompanyReport,
+  publicError,
+  ResearchError,
+} from './research.js';
 import { searchNews, getPriceHistory } from './providers.js';
 import { translateReport } from './localization.js';
 import { reportSchema } from '../shared/report.js';
 import { newsWindows } from '../shared/news.js';
+import { resolveNewsCompany } from '../shared/companyAliases.js';
 
 export function createApp({
   research = researchCompany,
   news = searchNews,
   prices = getPriceHistory,
   translate = translateReport,
+  analyze = retryCompanyAnalysis,
 } = {}) {
   const app = express();
   app.post('/api/translate-report', express.json({ limit: '1mb' }), async (req, res) => {
@@ -19,6 +28,8 @@ export function createApp({
     )
       return res.status(400).json({ error: 'Invalid report or language.' });
     try {
+      if (['direct-analysis-v1', 'grounded-research-v2'].includes(req.body.report.workflow))
+        return res.json(localizeCompanyReport(req.body.report, req.body.language));
       res.json(
         await translate({
           report: req.body.report,
@@ -28,16 +39,37 @@ export function createApp({
       );
     } catch (error) {
       const result = publicError(error);
-      res.status(result.status).json({ error: result.message });
+      if (result.gemini?.retryAfterSeconds)
+        res.set('Retry-After', String(result.gemini.retryAfterSeconds));
+      res.status(result.status).json({ error: result.message, gemini: result.gemini });
     }
   });
   app.use(express.json({ limit: '12kb' }));
+  app.post('/api/research/:id/analysis', async (req, res) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 160000);
+    res.on('close', () => controller.abort());
+    try {
+      res.json(
+        await analyze({
+          id: req.params.id,
+          language: req.body?.language === 'en' ? 'en' : 'vi',
+          signal: controller.signal,
+        }),
+      );
+    } catch (error) {
+      const result = publicError(error);
+      res.status(result.status).json({ error: result.message, gemini: result.gemini });
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
   app.get('/api/health', (_req, res) =>
     res.json({
       status: 'ok',
       configured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
-      newsConfigured: Boolean(process.env.TAVILY_API_KEY),
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+      newsConfigured: Boolean(process.env.GOOGLE_NEWS_API_KEY),
+      ...geminiStatus(),
     }),
   );
   app.post('/api/research', async (req, res) => {
@@ -49,7 +81,7 @@ export function createApp({
     const language = req.body.language === 'en' ? 'en' : 'vi';
     const streaming = req.get('accept')?.includes('application/x-ndjson');
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 270000);
+    const timeout = setTimeout(() => controller.abort(), 600000);
     res.on('close', () => controller.abort());
     const send = (value) => {
       if (!res.destroyed) res.write(`${JSON.stringify(value)}\n`);
@@ -83,9 +115,23 @@ export function createApp({
       const result = publicError(error);
       if (!res.destroyed) {
         if (streaming) {
-          send({ type: 'error', error: result.message });
+          send({
+            type: 'error',
+            error: result.message,
+            status: result.status,
+            gemini: result.gemini,
+            diagnostics: result.diagnostics,
+          });
           res.end();
-        } else res.status(result.status).json({ error: result.message });
+        } else {
+          if (result.gemini?.retryAfterSeconds)
+            res.set('Retry-After', String(result.gemini.retryAfterSeconds));
+          res.status(result.status).json({
+            error: result.message,
+            gemini: result.gemini,
+            diagnostics: result.diagnostics,
+          });
+        }
       }
     } finally {
       clearTimeout(timeout);
@@ -96,6 +142,10 @@ export function createApp({
     const query = typeof req.body?.query === 'string' ? req.body.query.trim() : '';
     if (query.length < 2 || query.length > 200)
       return res.status(400).json({ error: 'Enter a news topic between 2 and 200 characters.' });
+    if (!resolveNewsCompany(query))
+      return res
+        .status(400)
+        .json({ error: 'Choose a supported Vietnamese company name or stock ticker.' });
     try {
       res.json(
         await news({
@@ -110,7 +160,7 @@ export function createApp({
         error:
           error instanceof ResearchError
             ? error.message
-            : 'Tavily news search is unavailable. Please retry.',
+            : 'Google News search is unavailable. Please retry.',
       });
     }
   });

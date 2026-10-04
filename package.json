@@ -11,13 +11,16 @@
     "build": "vite build",
     "start": "node server/index.js --production",
     "test": "node --test tests/*.test.js",
-    "test:live": "node scripts/check-gemini.js"
+    "test:live": "node scripts/check-gemini.js",
+    "test:grounding:live": "node scripts/check-grounding.js",
+    "test:news:live": "node scripts/check-news.js"
   },
   "dependencies": {
-    "@google/genai": "^1.0.0",
+    "@google/genai": "^2.27.0",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "lucide-react": "^0.468.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.0",

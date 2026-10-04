@@ -2,6 +2,24 @@ import { useLanguage } from './i18n.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Search, X, Download } from 'lucide-react';
 import { safeUrl, validDate } from '../shared/report.js';
+import { freshness } from '../shared/evidence.js';
+
+export function EvidenceStatus({ row, date, report }) {
+  const { t } = useLanguage();
+  const label =
+    row.evidenceStatus === 'sources-only'
+      ? 'Sources provided; individual claims not verified'
+      : row.evidenceStatus === 'direct'
+        ? 'Retrieved from source'
+        : 'Citation linked; not independently verified';
+  return (
+    <div className="evidence-status small muted">
+      <span>{t(label)}</span>
+      {date !== undefined && <span> · {t(freshness(date, report.generatedAt))}</span>}
+      {row.conflictGroup && <span> · {t('Conflicting sourced figures')}</span>}
+    </div>
+  );
+}
 export function Heading({ title, subtitle, children }) {
   const { t } = useLanguage();
   return (
@@ -56,7 +74,7 @@ export function Sources({ ids = [], report }) {
     </span>
   );
 }
-export function ResearchForm({ onResearch, busy, initial = '', compact = false }) {
+export function ResearchForm({ onResearch, busy, blocked = false, initial = '', compact = false }) {
   const { t, language } = useLanguage();
   const [query, setQuery] = useState(initial);
   useEffect(() => setQuery(initial), [initial]);
@@ -65,7 +83,7 @@ export function ResearchForm({ onResearch, busy, initial = '', compact = false }
       className={`research-form ${compact ? 'compact' : ''}`}
       onSubmit={(event) => {
         event.preventDefault();
-        if (query.trim().length >= 2) onResearch(query.trim(), language);
+        if (!busy && !blocked && query.trim().length >= 2) onResearch(query.trim(), language);
       }}
     >
       <label className="search-input">
@@ -81,8 +99,13 @@ export function ResearchForm({ onResearch, busy, initial = '', compact = false }
           disabled={busy}
         />
       </label>
-      <button className="button primary" disabled={busy || query.trim().length < 2} type="submit">
-        {busy ? t('Researching…') : t('Research company')} {!busy && <span>→</span>}
+      <button
+        className="button primary"
+        disabled={busy || blocked || query.trim().length < 2}
+        type="submit"
+      >
+        {busy ? t('Researching…') : blocked ? t('Please wait to retry') : t('Research company')}{' '}
+        {!busy && !blocked && <span>→</span>}
       </button>
     </form>
   );
@@ -156,7 +179,7 @@ export function Evidence({ report }) {
       <p>
         {' '}
         {t(
-          "Gemini uses Google Search for financials and brokerage research, then organizes the returned evidence. Source links are taken from Google's grounding response. Citations indicate supporting search results, not an independent audit of every claim.",
+          'Gemini researches company facts and analysis with Google Search. A broker-report search is optional; structured formatting combines the evidence. At most three Gemini requests are used. Code checks sources, dates, units and figures. Vietstock supports the evidence and chart. Source links are not an independent audit.',
         )}{' '}
       </p>
       <div className="grid two">
@@ -169,6 +192,11 @@ export function Evidence({ report }) {
           <p className="small">
             {t('Query:')} {report.query}
           </p>
+          {report.requestUsage && (
+            <p className="small">
+              {t('Gemini requests:')} {report.requestUsage.requests} / {report.requestUsage.limit}
+            </p>
+          )}
         </Card>
         <Card className="caution">
           <h3>{t('Coverage & limitations')}</h3>
@@ -199,8 +227,14 @@ export function Evidence({ report }) {
       {report.research.map((section, i) => (
         <details key={i}>
           <summary>
-            {t(section.section)} {t('· search queries and original evidence')}
+            {t(section.section)}{' '}
+            {t(
+              report.workflow === 'direct-analysis-v1'
+                ? '· original evidence'
+                : '· search queries and original evidence',
+            )}
           </summary>
+          <EvidenceStatus row={section} report={report} />
           <p className="small muted">{section.queries.join(' · ')}</p>
           <div className="raw-research">{section.text}</div>
           {section.claims

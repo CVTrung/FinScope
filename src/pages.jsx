@@ -1,110 +1,81 @@
 import { useLanguage } from './i18n.jsx';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight,
-  Clock3,
-  BookOpen,
-  ChartNoAxesCombined,
-  FileText,
-  Sparkles,
-} from 'lucide-react';
-import { summarizeTargets, cashConversion } from '../shared/report.js';
+import { ArrowRight, Clock3, FileText, Check, Minus, LoaderCircle } from 'lucide-react';
+import { Valuation } from './Valuation.jsx';
+import { priceWindow, priceRanges } from './priceWindow.js';
+import { reportView, financialFields } from './reportView.js';
 import {
   Card,
   Heading,
   Pill,
-  Empty,
   Sources,
   ResearchForm,
-  CompanyBanner,
   LineChart,
+  EvidenceStatus,
 } from './components.jsx';
-const features = [
-  {
-    path: '/market',
-    label: 'MARKET',
-    title: 'Know the company',
-    body: 'Explore its business, price history, financial performance, and peers.',
-    color: 'teal',
-    icon: ChartNoAxesCombined,
-  },
-  {
-    path: '/news',
-    label: 'NEWS',
-    title: 'Follow the context',
-    body: 'Read relevant developments and trace each story back to its publisher.',
-    color: '',
-    icon: FileText,
-  },
-  {
-    path: '/analysis',
-    label: 'ANALYSIS',
-    title: 'Examine the reasoning',
-    body: 'Review observations, alternative explanations, and the evidence behind them.',
-    color: 'caution',
-    icon: Sparkles,
-  },
-  {
-    path: '/targets',
-    label: 'PRICE TARGETS',
-    title: 'Compare estimates',
-    body: 'Compare dated research targets, assumptions, and risks with the market price.',
-    color: 'teal',
-    icon: BookOpen,
-  },
-];
-export function Home({ onResearch, busy, history, onSelect, onClear, onMethods, hasReport }) {
-  const { t, language, formatDate } = useLanguage();
+
+export function Home({ onResearch, busy, searchBlocked, history, onSelect, onClear }) {
+  const { t, formatDate } = useLanguage();
   return (
     <>
-      <section className="hero">
-        <Pill>{t('GEMINI SEARCH · COMPANY RESEARCH')}</Pill>
+      <section className="hero research-home">
+        <Pill>{t('COMPANY RESEARCH')}</Pill>
         <h1>
-          {' '}
-          {t('See the market.')} <br /> {t('Understand the story.')}{' '}
+          {t('Start with a company.')}
+          <br />
+          {t('See what the evidence supports.')}
         </h1>
-        <p>
+        <p>{t('One report with sourced facts, research observations and clearly marked gaps.')}</p>
+        <ResearchForm onResearch={onResearch} busy={busy} blocked={searchBlocked} />
+        <p className="hero-note">
           {t(
-            'Explore companies, follow the news, and connect financial evidence to economic ideas.',
+            'Enter a company and exchange, for example FPT (HOSE). Research availability depends on public sources.',
           )}
         </p>
-        <ResearchForm onResearch={onResearch} busy={busy} />
-        <div className="suggestions">
-          <span>{t('Try a company')}</span>
-          {['FPT (HOSE)', 'Vinamilk (VNM)', 'Apple (NASDAQ: AAPL)'].map((query) => (
-            <button key={query} disabled={busy} onClick={() => onResearch(query, language)}>
-              {query} ↗
-            </button>
-          ))}
-        </div>
-        <p className="hero-note">
-          {t('Research a company on Home. Search News independently. Sources included.')}
-        </p>
       </section>
+      <Card className="news-entry">
+        <div>
+          <Pill>{t('INDEPENDENT NEWS')}</Pill>
+          <h2>{t('Just looking for company news?')}</h2>
+          <p className="muted">
+            {t('Search Vietnamese companies and stocks without creating a research report.')}
+          </p>
+        </div>
+        <Link className="button" to="/news">
+          <FileText size={17} />
+          {t('Open News')}
+          <ArrowRight size={16} />
+        </Link>
+      </Card>
       {history.length > 0 && (
         <section>
           <Heading
-            title={t('Pick up your research')}
+            title={t('Saved research')}
             subtitle={t(
-              'Saved on this browser. Gemini translates reports when the language changes.',
+              'Stored in this browser. Open a previous report without researching again.',
             )}
           >
             <button className="text-button" onClick={onClear}>
-              {' '}
-              {t('Clear history')}{' '}
+              {t('Clear history')}
             </button>
           </Heading>
           <div className="history-list">
             {history.map((report) => (
-              <button key={report.id} className="history-item" onClick={() => onSelect(report)}>
+              <button
+                key={report.id}
+                className="history-item"
+                disabled={busy}
+                onClick={() => onSelect(report)}
+              >
                 <span className="ticker-icon">
                   {(report.company.ticker || report.company.name).slice(0, 3)}
                 </span>
                 <span>
                   <strong>{report.company.name}</strong>
                   <small>
-                    <Clock3 size={12} /> {formatDate(report.generatedAt)}
+                    <Clock3 size={12} />
+                    {formatDate(report.generatedAt)}
                   </small>
                 </span>
                 <ArrowRight size={18} />
@@ -113,628 +84,743 @@ export function Home({ onResearch, busy, history, onSelect, onClear, onMethods, 
           </div>
         </section>
       )}
-      <Heading
-        title={t('One place to build your understanding')}
-        subtitle={t('Four connected research spaces, from first question to supporting evidence.')}
-      />
-      <div className="grid four">
-        {features.map((feature, i) => (
-          <Card key={feature.path} className={`feature ${feature.color}`}>
-            <div className="eyebrow">
-              0{i + 1} / {t(feature.label)}
-              <feature.icon size={19} />
-            </div>
-            <h2>{t(feature.title)}</h2>
-            <p className="muted">{t(feature.body)}</p>
-            <Link
-              className="button"
-              to={feature.path === '/news' || hasReport ? feature.path : '/'}
-            >
-              {feature.path !== '/news' && !hasReport
-                ? t('Start with Home search')
-                : `${t('Explore')} ${t(feature.label)}`}{' '}
-              <ArrowRight size={15} />
-            </Link>
-          </Card>
-        ))}
-      </div>
-      <Heading
-        title={t('A simple path from curiosity to insight')}
-        subtitle={t(
-          'Start with a company. Follow the evidence as your question becomes more specific.',
+      <p className="small muted">
+        {t(
+          'Reports are dated research snapshots. Source links support the findings; they do not guarantee accuracy or complete coverage.',
         )}
-      />
-      <Card>
-        <div className="grid four journey">
-          {[
-            ['Discover', 'Enter a company name or stock ticker.'],
-            ['Research', 'Gemini searches financials and published reports.'],
-            ['Interpret', 'Explore the results and compare explanations.'],
-            ['Verify', 'Inspect the source, period, and method.'],
-          ].map(([title, detail], i) => (
-            <div key={t(title)}>
-              <Pill>{i + 1}</Pill>
-              <h3>{t(title)}</h3>
-              <p className="muted">{t(detail)}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
-      <Card className="teal">
-        <Heading title={t('Built for learning, with evidence in view.')}>
-          <button className="button" onClick={onMethods}>
-            {' '}
-            {t('Sources & methods')}{' '}
-          </button>
-        </Heading>
-        <p>
-          {' '}
-          {t(
-            'Search-grounded research, dated observations, and clearly stated gaps. No account required. Designed for a university economics project.',
-          )}{' '}
-        </p>
-      </Card>
+      </p>
     </>
   );
 }
-export function Market({ report, onEvidence }) {
-  const { t, formatNumber } = useLanguage();
-  const [range, setRange] = useState('1Y');
-  const [period, setPeriod] = useState('quarterly');
-  const [prices, setPrices] = useState(null);
-  const [priceError, setPriceError] = useState('');
-  const [loadingPrices, setLoadingPrices] = useState(true);
-  const [attempt, setAttempt] = useState(0);
+
+export function CompanyReport({ report, onEvidence, onUpdateReport }) {
+  const { t, formatNumber, formatDate } = useLanguage();
+  const view = reportView(report);
+  const [period, setPeriod] = useState(
+    view.financials.some((row) => row.kind === 'annual')
+      ? 'annual'
+      : view.financials[0]?.kind || 'quarterly',
+  );
+  const [showAll, setShowAll] = useState(false);
+  const rows = view.financials.filter((row) => row.kind === period).slice(showAll ? 0 : -4);
+  const growth = (report.growth || []).filter((row) => row.kind === period).slice(-2);
+  const fields = financialFields.filter(([, key]) => rows.some((row) => Number.isFinite(row[key])));
+  const missing = view.coverage.filter((item) => !item.available);
+  return (
+    <div className="stack company-report report-redesign">
+      {report.researchLanguage && report.researchLanguage !== report.language && (
+        <Card className="caution">
+          <p>
+            {t(
+              'Research text remains in its original language. Start a new company search for the selected language.',
+            )}
+          </p>
+          <Link className="text-button" to="/">
+            {t('New company research')}
+          </Link>
+        </Card>
+      )}
+      <Card className="report-identity">
+        {report.company.evidenceStatus === 'sources-only' && (
+          <p className="small muted">{t('Sources provided; individual claims not verified')}</p>
+        )}
+        <div className="report-company-heading">
+          <div className="company-monogram">
+            {(report.company.ticker || report.company.name).slice(0, 3)}
+          </div>
+          <div>
+            <p className="report-kicker">{t('Company report')}</p>
+            <h1>{report.company.name}</h1>
+            <p className="muted">
+              {[report.company.ticker, report.company.exchange, report.company.sector]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          </div>
+        </div>
+        <div className="report-identity-body">
+          <div>
+            {view.profile ? (
+              <details className="company-profile">
+                <summary>{t('Company overview')}</summary>
+                <p>
+                  {report.company.description}{' '}
+                  <Sources ids={report.company.sourceIds} report={report} />
+                </p>
+              </details>
+            ) : (
+              <p className="muted">{t('A sourced company description was not returned.')}</p>
+            )}
+          </div>
+          <div className="report-quote">
+            <small>{t('Dated stock price')}</small>
+            <strong>
+              {view.quote
+                ? formatNumber(view.quote.price, ` ${view.quote.currency}`)
+                : t('Not available')}
+            </strong>
+            {view.quote && (
+              <small>
+                {formatDate(view.quote.asOf)} <Sources ids={view.quote.sourceIds} report={report} />
+              </small>
+            )}
+            <small className="muted">{t('Research snapshot · Not a live price')}</small>
+          </div>
+        </div>
+      </Card>
+      <div className="report-columns">
+        <div className="stack report-main">
+          <PriceHistory report={report} />
+          {report.analysisStatus && (
+            <AnalysisStatus report={report} onUpdateReport={onUpdateReport} />
+          )}
+          {report.quoteAlternatives?.length > 0 && (
+            <details className="small">
+              <summary>{t('Conflicting sourced prices')}</summary>
+              <p>{t('Different sourced values are shown separately. No average is used.')}</p>
+              {report.quoteAlternatives.map((quote, index) => (
+                <p key={index}>
+                  {formatNumber(quote.price, ` ${quote.currency}`)} · {quote.asOf}{' '}
+                  <Sources ids={quote.sourceIds} report={report} />
+                </p>
+              ))}
+            </details>
+          )}
+          {growth.length > 0 && (
+            <Card className="teal">
+              <Heading
+                title={t('Reported growth')}
+                subtitle={t('Year-on-year change calculated from matching reported periods.')}
+              />
+              <div className="grid two">
+                {growth.map((row) => (
+                  <div key={row.metric + row.period}>
+                    <small>
+                      {t(row.metric === 'revenue' ? 'Revenue' : 'Net income')} · {row.period}
+                    </small>
+                    <h3>{formatNumber(row.percent, '%')}</h3>
+                    <small>
+                      {t('Compared with')} {row.previousPeriod}{' '}
+                      <Sources ids={row.sourceIds} report={report} />
+                    </small>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+          {view.financials.length > 0 && (
+            <Card>
+              <Heading
+                title={t('Financial statements')}
+                subtitle={t(
+                  'Only metrics with reported values are shown. Missing cells stay unavailable.',
+                )}
+              >
+                <div className="segmented">
+                  {['annual', 'quarterly', 'ytd']
+                    .filter((kind) => view.financials.some((row) => row.kind === kind))
+                    .map((kind) => (
+                      <button
+                        key={kind}
+                        aria-pressed={period === kind}
+                        className={period === kind ? 'active' : ''}
+                        onClick={() => setPeriod(kind)}
+                      >
+                        {t(
+                          kind === 'annual'
+                            ? 'Annual'
+                            : kind === 'quarterly'
+                              ? 'Quarterly'
+                              : 'Year to date',
+                        )}
+                      </button>
+                    ))}
+                </div>
+              </Heading>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t('Metric / unit')}</th>
+                      {rows.map((row, i) => (
+                        <th key={i}>
+                          {row.period}
+                          {row.periodStart && (
+                            <small>
+                              {t('Period starts')}: {row.periodStart}
+                            </small>
+                          )}
+                          <small>
+                            {!row.unit
+                              ? t('Unit not disclosed')
+                              : row.unit.includes(row.currency)
+                                ? row.unit
+                                : `${row.unit} · ${row.currency}`}
+                            {!row.currency && ` · ${t('Currency not disclosed')}`}
+                            {' · '}
+                            {t(
+                              row.profitBasis === 'consolidated'
+                                ? 'Consolidated'
+                                : row.profitBasis === 'standalone'
+                                  ? 'Standalone'
+                                  : row.profitBasis === 'attributable'
+                                    ? 'Attributable to parent shareholders'
+                                    : 'Scope unknown',
+                            )}
+                          </small>
+                          <Sources ids={row.sourceIds} report={report} />
+                          {row.operatingCashFlow !== null && (
+                            <small>
+                              {t('Cash flow scope')}:{' '}
+                              {t(
+                                row.cashFlowBasis === 'consolidated'
+                                  ? 'Consolidated'
+                                  : row.cashFlowBasis === 'standalone'
+                                    ? 'Standalone'
+                                    : 'Scope unknown',
+                              )}
+                            </small>
+                          )}
+                          <EvidenceStatus row={row} date={row.period} report={report} />
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fields.map(([label, key, suffix]) => (
+                      <tr key={key}>
+                        <td>{t(label)}</td>
+                        {rows.map((row, i) => (
+                          <td key={i}>
+                            {Number.isFinite(row[key]) ? (
+                              formatNumber(row[key], suffix)
+                            ) : (
+                              <span className="muted">{t('Not available')}</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="small muted">
+                {t(
+                  'Up to four reported periods. Check units and accounting scope before comparing.',
+                )}
+              </p>
+              <button className="text-button" onClick={() => setShowAll((value) => !value)}>
+                {t(showAll ? 'Show recent periods' : 'Show all periods')}
+              </button>
+              {fields.length < financialFields.length && (
+                <p className="small muted">
+                  {t('Not available')}:{' '}
+                  {financialFields
+                    .filter(([, key]) => !fields.some(([, shown]) => shown === key))
+                    .map(([label]) => t(label))
+                    .join(' · ')}
+                </p>
+              )}
+            </Card>
+          )}
+
+          {report.conflicts?.length > 0 && (
+            <Card className="caution">
+              <Heading
+                title={t('Conflicting reported figures')}
+                subtitle={t('Different sourced values are shown separately. No average is used.')}
+              />
+              {report.conflicts.map((conflict, index) => (
+                <details key={index}>
+                  <summary>
+                    {conflict.period} ·{' '}
+                    {t(
+                      conflict.kind === 'annual'
+                        ? 'Annual'
+                        : conflict.kind === 'ytd'
+                          ? 'Year to date'
+                          : 'Quarterly',
+                    )}{' '}
+                    ·{' '}
+                    {conflict.unit.includes(conflict.currency)
+                      ? conflict.unit
+                      : `${conflict.unit} ${conflict.currency}`}{' '}
+                    ·{' '}
+                    {t(
+                      conflict.profitBasis === 'consolidated'
+                        ? 'Consolidated'
+                        : conflict.profitBasis === 'standalone'
+                          ? 'Standalone'
+                          : conflict.profitBasis === 'attributable'
+                            ? 'Attributable to parent shareholders'
+                            : 'Scope unknown',
+                    )}
+                  </summary>
+                  <p>{t(conflict.note)}</p>
+                  {conflict.fields.map((field) => (
+                    <div key={field.metric}>
+                      <strong>
+                        {t(
+                          financialFields.find(([, key]) => key === field.metric)?.[0] ||
+                            field.metric,
+                        )}
+                      </strong>
+                      {field.values.map((value, i) => (
+                        <p key={i}>
+                          {formatNumber(value.value)}{' '}
+                          <Sources ids={value.sourceIds} report={report} />
+                        </p>
+                      ))}
+                    </div>
+                  ))}
+                </details>
+              ))}
+            </Card>
+          )}
+
+          {report.research
+            ?.filter((section) => section.evidenceStatus === 'sources-only')
+            .map((section, index) => (
+              <Card className="caution" key={'excerpt-' + index}>
+                <Heading
+                  title={t('Research excerpt')}
+                  subtitle={t('Sources provided; individual claims not verified')}
+                />
+                <p className="small">
+                  {t(
+                    'This section includes source URLs without sentence-level citation mappings. Figures are not independently verified.',
+                  )}
+                </p>
+                <details>
+                  <summary>{t('Read sourced section')}</summary>
+                  <div className="raw-research">{section.text}</div>
+                </details>
+                <Sources ids={section.sourceIds || []} report={report} />
+              </Card>
+            ))}
+
+          {view.observations.length > 0 && (
+            <Card>
+              <Heading
+                title={t('Research observations')}
+                subtitle={t(
+                  'AI interpretations of the cited evidence. Open a finding for its reasoning.',
+                )}
+              >
+                <Pill tone="caution">{t('AI INTERPRETATION')}</Pill>
+              </Heading>
+              <div className="report-details">
+                {view.observations.map((item, i) => (
+                  <details key={i}>
+                    <summary>{item.title}</summary>
+                    <p>
+                      {item.detail} <Sources ids={item.sourceIds} report={report} />
+                    </p>
+                    <EvidenceStatus row={item} report={report} />
+                    {item.alternative && (
+                      <p>
+                        <strong>{t('Alternative explanation')}: </strong>
+                        {item.alternative}
+                      </p>
+                    )}
+                    {item.nextStep && (
+                      <p>
+                        <strong>{t('What to check next')}: </strong>
+                        {item.nextStep}
+                      </p>
+                    )}
+                  </details>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+        <aside className="stack report-sidebar" aria-label={t('Evidence and coverage')}>
+          {report.metrics.length > 0 && (
+            <Card className="subtle">
+              <Heading
+                title={t('Period-end ratios')}
+                subtitle={t('Reported ratios; not live valuations.')}
+              />
+              {report.metrics.slice(0, 3).map((item, index) => (
+                <p key={index}>
+                  <strong>
+                    {item.label}: {item.value}
+                  </strong>
+                  <br />
+                  <small className="muted">
+                    {item.period} <Sources ids={item.sourceIds} report={report} />
+                  </small>
+                </p>
+              ))}
+              {report.metrics.length > 3 && (
+                <details>
+                  <summary>{t('More ratios')}</summary>
+                  {report.metrics.slice(3).map((item, index) => (
+                    <p key={index}>
+                      {item.label}: {item.value} · {item.period}{' '}
+                      <Sources ids={item.sourceIds} report={report} />
+                    </p>
+                  ))}
+                </details>
+              )}
+            </Card>
+          )}
+          <Card className="report-coverage">
+            <Heading title={t('Evidence at a glance')} subtitle={t('What this research found')} />
+            <div className="coverage-list" aria-label={t('Report coverage')}>
+              {view.coverage
+                .filter((item) => item.available)
+                .map((item) => (
+                  <div
+                    key={item.label}
+                    className={`coverage-item ${item.available ? 'available' : ''}`}
+                  >
+                    {item.available ? <Check size={15} /> : <Minus size={15} />}
+                    <span>
+                      {t(item.label)}
+                      <small>
+                        {t(item.available ? 'Available with sources' : 'Not available')}
+                      </small>
+                    </span>
+                  </div>
+                ))}
+            </div>
+            <p className="small muted">
+              {t(
+                'Available means the report contains usable source-linked data, not independently verified facts.',
+              )}
+            </p>
+          </Card>
+          <Card className="data-gaps">
+            <details>
+              <summary>{t('Missing coverage and original documents')}</summary>
+              <Heading
+                title={t('What this report cannot establish')}
+                subtitle={t('Missing information is not zero and does not mean it does not exist.')}
+              />
+              {missing.length > 0 ? (
+                <ul>
+                  {missing.map((item) => (
+                    <li key={item.label}>
+                      <strong>{t(item.label)}: </strong>
+                      {t(item.reason)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted">
+                  {t(
+                    'All core sections have some evidence. Coverage can still be incomplete or outdated.',
+                  )}
+                </p>
+              )}
+              {(report.limitations.length > 0 || report.analysis.risks.length > 0) && (
+                <details>
+                  <summary>{t('Research limitations and risks')}</summary>
+                  <ul>
+                    {[...new Set([...report.limitations, ...report.analysis.risks])]
+                      .filter(Boolean)
+                      .map((item, i) => (
+                        <li key={i}>{t(item)}</li>
+                      ))}
+                  </ul>
+                </details>
+              )}
+              <button className="text-button" onClick={onEvidence}>
+                {t('Inspect all sources and original research')}
+                <ArrowRight size={15} />
+              </button>
+              {report.directEvidence?.reports?.length > 0 && (
+                <>
+                  <h3>{t('Original broker report links')}</h3>
+                  <p className="small muted">
+                    {t(
+                      'Listing dates are publisher dates, not verified report dates. Links alone do not establish targets.',
+                    )}
+                  </p>
+                  {report.directEvidence.reports.map((item, index) => (
+                    <p className="small" key={index}>
+                      <a href={item.originalPdfUrl || item.url} target="_blank" rel="noreferrer">
+                        {item.firm} · {item.title}
+                      </a>
+                    </p>
+                  ))}
+                </>
+              )}
+            </details>
+          </Card>
+
+          <Card className="report-news">
+            <FileText size={20} />
+            <h3>{t('Follow company news')}</h3>
+            <p className="small muted">
+              {t('News is searched separately and is not part of this snapshot.')}
+            </p>
+            <Link
+              className="button"
+              to={`/news?q=${encodeURIComponent(report.company.ticker || report.company.name)}`}
+            >
+              {t('Open News')}
+              <ArrowRight size={15} />
+            </Link>
+          </Card>
+        </aside>
+      </div>
+      {report.targets.length > 0 && <Valuation report={report} />}
+    </div>
+  );
+}
+
+function AnalysisStatus({ report, onUpdateReport }) {
+  const { t } = useLanguage();
+  const status = report.analysisStatus;
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [remaining, setRemaining] = useState(0);
+  const [expired, setExpired] = useState(status.state === 'expired');
   useEffect(() => {
+    if (!(status.retryAfterSeconds > 0)) {
+      setRemaining(0);
+      return;
+    }
+    const deadline = status.retryAvailableAt
+      ? new Date(status.retryAvailableAt).getTime()
+      : Date.now() + status.retryAfterSeconds * 1000;
+    const update = () => setRemaining(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [status]);
+  async function retry() {
+    if (busy || remaining > 0) return;
+    setBusy(true);
+    setError('');
+    try {
+      const response = await fetch(`/api/research/${encodeURIComponent(report.id)}/analysis`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: report.language }),
+        signal: AbortSignal.timeout(165000),
+      });
+      const data = await response.json();
+      if (response.status === 410) setExpired(true);
+      if (!response.ok)
+        throw new Error(data.error || 'Analysis could not be completed. Please try again.');
+      onUpdateReport(data);
+    } catch (cause) {
+      setError(cause.message || 'Analysis could not be completed. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (status.state === 'ready')
+    return report.analysis.observations.length ? null : (
+      <p className="small muted">
+        {t('No supported AI observations were returned. Sourced facts remain available.')}
+      </p>
+    );
+  return (
+    <Card className="caution" role="status">
+      <h3>
+        {t(
+          report.workflow === 'grounded-research-v2'
+            ? 'Grounded company research'
+            : 'Optional Gemini analysis',
+        )}
+      </h3>
+      <p>{t(status.message)}</p>
+      {status.status === 429 && report.workflow !== 'grounded-research-v2' && (
+        <p className="small">
+          {t('Gemini has reached a request or quota limit. Please wait and try again.')}
+        </p>
+      )}
+      {remaining > 0 && (
+        <p className="small">
+          {t('Try again in')}{' '}
+          {remaining >= 3600
+            ? `${Math.floor(remaining / 3600)} ${t('hours')} ${Math.ceil((remaining % 3600) / 60)} ${t('minutes')}`
+            : remaining >= 60
+              ? `${Math.ceil(remaining / 60)} ${t('minutes')}`
+              : `${remaining} ${t('seconds')}`}
+          .
+        </p>
+      )}
+      {error && <p role="alert">{t(error)}</p>}
+      {!expired && status.retryAllowed !== false && (
+        <button className="button" disabled={busy || remaining > 0} onClick={retry}>
+          {t(
+            busy
+              ? 'Analyzing…'
+              : status.state === 'not-requested'
+                ? 'Analyze in selected language'
+                : report.workflow === 'grounded-research-v2'
+                  ? 'Retry formatting'
+                  : 'Retry analysis',
+          )}
+        </button>
+      )}
+      {(expired || status.retryAllowed === false) && (
+        <Link className="button" to="/">
+          {t('New company research')}
+        </Link>
+      )}
+      <p className="small muted">
+        {t(
+          report.workflow === 'grounded-research-v2' && status.retryAllowed === false
+            ? 'This search has used all three Gemini requests. Wait for quota availability, then start a new Home search.'
+            : report.workflow === 'grounded-research-v2'
+              ? 'Manual formatting retry uses cached evidence and counts toward the original three-request limit. No automatic retry is made.'
+              : 'Analysis retry reuses cached evidence for 30 minutes and does not retrieve sources again.',
+        )}
+      </p>
+    </Card>
+  );
+}
+
+const priceCache = new Map();
+function PriceHistory({ report }) {
+  const { t, formatNumber, formatDate } = useLanguage();
+  const key = `${report.company.exchange}:${report.company.ticker}`;
+  const cached = priceCache.get(key);
+  const [prices, setPrices] = useState(
+    report.priceData || (cached && Date.now() - cached.savedAt < 900000 ? cached.data : null),
+  );
+  const [range, setRange] = useState('1Y');
+  const [attempt, setAttempt] = useState(0);
+  const supported =
+    /^(HOSE|HSX|HNX|UPCOM)$/i.test(report.company.exchange) &&
+    /^[a-z0-9]{2,10}$/i.test(report.company.ticker);
+  const [busy, setBusy] = useState(supported && !prices);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    if (!supported) return;
+    if (attempt === 0 && report.priceData) {
+      setPrices(report.priceData);
+      setBusy(false);
+      return;
+    }
+    const existing = priceCache.get(key);
+    if (attempt === 0 && existing && Date.now() - existing.savedAt < 900000) {
+      setPrices(existing.data);
+      setBusy(false);
+      return;
+    }
     const controller = new AbortController();
-    setLoadingPrices(true);
-    setPriceError('');
-    setPrices(null);
+    const timeout = setTimeout(() => controller.abort('timeout'), 60000);
+    setBusy(true);
+    setError('');
     fetch(
       '/api/prices?' +
-        new URLSearchParams({
-          ticker: report.company.ticker,
-          exchange: report.company.exchange,
-        }),
-      {
-        signal: controller.signal,
-      },
+        new URLSearchParams({ ticker: report.company.ticker, exchange: report.company.exchange }),
+      { signal: controller.signal },
     )
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
+        if (!Array.isArray(data.points) || !Array.isArray(data.sources))
+          throw new Error('Price history is currently unavailable.');
         return data;
       })
-      .then(setPrices)
-      .catch((error) => {
-        if (!controller.signal.aborted) setPriceError(error.message);
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setPrices(data);
+          priceCache.set(key, { data, savedAt: Date.now() });
+        }
+      })
+      .catch((cause) => {
+        if (!controller.signal.aborted || controller.signal.reason === 'timeout')
+          setError(
+            controller.signal.reason === 'timeout'
+              ? 'Price history is currently unavailable.'
+              : cause.message,
+          );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoadingPrices(false);
+        clearTimeout(timeout);
+        if (!controller.signal.aborted || controller.signal.reason === 'timeout') setBusy(false);
       });
-    return () => controller.abort();
-  }, [report.id, report.company.ticker, report.company.exchange, attempt]);
-  const days = {
-    '1M': 30,
-    '3M': 90,
-    '6M': 180,
-    '1Y': 365,
-    All: Infinity,
-  }[range];
-  const points = (prices?.points || []).filter(
-    (point) => (new Date(prices.retrievedAt) - new Date(point.date)) / 86400000 <= days,
-  );
-  const financials = report.financials.filter((row) => row.kind === period);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [attempt, key, supported, report.company.ticker, report.company.exchange, report.priceData]);
+  const points = priceWindow(prices?.points || [], range);
+  const latest = points.at(-1);
+  const change = prices?.windowStats?.[range]?.changePercent ?? null;
   return (
-    <>
-      <Heading
-        title={t('Explore the market')}
-        subtitle={t(
-          'Inspect the company researched on Home, its financial history, and its peers.',
-        )}
-      >
-        <Pill>{t('SEARCH SNAPSHOT')}</Pill>
-      </Heading>
-      <CompanyBanner report={report} />
-      <Card>
-        <Heading
-          title={t('Price history')}
-          subtitle={t('Vietstock · VND · Daily closing prices over the past year')}
-        >
-          <div className="segmented">
-            {['1M', '3M', '6M', '1Y', 'All'].map((value) => (
-              <button
-                key={t(value)}
-                className={range === value ? 'active' : ''}
-                aria-pressed={range === value}
-                onClick={() => setRange(value)}
-              >
-                {t(value)}
-              </button>
-            ))}
-          </div>
-        </Heading>
-        {loadingPrices ? (
-          <p role="status">{t('Loading historical prices from Vietstock…')}</p>
-        ) : priceError ? (
-          <div className="notice caution" role="alert">
-            <span>{t(priceError)}</span>
-            <button className="button" onClick={() => setAttempt((value) => value + 1)}>
-              {t('Retry prices')}
+    <Card className="report-price-card">
+      <Heading title={t('Price history')} subtitle={t('Vietstock · Daily closing prices · VND')}>
+        <div className="segmented price-range" aria-label={t('Price history range')}>
+          {priceRanges.map((value) => (
+            <button
+              key={value}
+              aria-pressed={range === value}
+              className={range === value ? 'active' : ''}
+              onClick={() => setRange(value)}
+            >
+              {t(value)}
             </button>
-          </div>
-        ) : (
-          <LineChart points={points} report={prices} suffix=" VND" />
-        )}
-        <a
-          href={`https://finance.vietstock.vn/${encodeURIComponent(report.company.ticker)}.htm`}
-          target="_blank"
-          rel="noreferrer"
-          className="text-button"
-        >
-          {t('View on Vietstock ↗')}
-        </a>
-        <p className="small muted">
-          {' '}
-          {t(
-            'Prices are retrieved directly from Vietstock. Adjustment basis is not disclosed by this endpoint; this series is not used to recalculate brokerage target returns.',
-          )}{' '}
-        </p>
-      </Card>
-      <div className="grid four">
-        {report.metrics.length ? (
-          report.metrics.map((metric, i) => (
-            <Card key={i} className={i === 1 ? 'caution metric' : 'metric'}>
-              <small className="muted">{metric.label}</small>
-              <strong>{metric.value}</strong>
-              <small>
-                {metric.period} <Sources ids={metric.sourceIds} report={report} />
-              </small>
-            </Card>
-          ))
-        ) : (
-          <Card className="span-all">
-            <Empty title={t('Key metrics not established')} />
-          </Card>
-        )}
-      </div>
-      <Card>
-        <Heading
-          title={t('Financial performance')}
-          subtitle={t('Check the currency, scale, and accounting period before comparing.')}
-        >
-          <div className="segmented">
-            {['quarterly', 'annual'].map((value) => (
-              <button
-                key={t(value)}
-                className={period === value ? 'active' : ''}
-                aria-pressed={period === value}
-                onClick={() => setPeriod(value)}
-              >
-                {value === 'annual' ? t('Annual') : t('Quarterly')}
-              </button>
-            ))}
-          </div>
-        </Heading>
-        {financials.length ? (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('Metric / unit')}</th>
-                  {financials.map((row, i) => (
-                    <th key={i}>
-                      {row.period}
-                      <small>
-                        {row.unit} · {row.currency}
-                      </small>
-                      <Sources ids={row.sourceIds} report={report} />
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Revenue', 'revenue', ''],
-                  ['Net income', 'netIncome', ''],
-                  ['Operating cash flow', 'operatingCashFlow', ''],
-                  ['Net margin', 'netMargin', '%'],
-                  ['Debt / equity', 'debtEquity', '×'],
-                ].map(([label, key, suffix]) => (
-                  <tr key={key}>
-                    <td>{t(label)}</td>
-                    {financials.map((row, i) => (
-                      <td key={i}>{formatNumber(row[key], suffix)}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <Empty title={`No comparable ${period} financials found`} />
-        )}
-        <button className="text-button" onClick={onEvidence}>
-          {' '}
-          {t('Inspect evidence and limitations ↗')}{' '}
-        </button>
-      </Card>
-      <div className="grid two">
-        <Card>
-          <Heading
-            title={t('Compare in context')}
-            subtitle={t('Segment and size differences matter.')}
-          />
-          {report.peers.length ? (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>{t('Company')}</th>
-                    <th>{t('P/E')}</th>
-                    <th>{t('Margin')}</th>
-                    <th>{t('Debt / equity')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.peers.map((peer, i) => (
-                    <tr key={i}>
-                      <td>
-                        <strong>{peer.ticker || peer.name}</strong>
-                        <small>{peer.period}</small>
-                        <Sources ids={peer.sourceIds} report={report} />
-                      </td>
-                      <td>{formatNumber(peer.pe, '×')}</td>
-                      <td>{formatNumber(peer.netMargin, '%')}</td>
-                      <td>{formatNumber(peer.debtEquity, '×')}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <Empty title={t('Peer data unavailable')} />
-          )}
-          {report.peers.map((peer, i) => (
-            <p className="small muted" key={i}>
-              {peer.name}: {peer.caveat}
-            </p>
           ))}
-        </Card>
-        <Card>
-          <Heading
-            title={t('Recent information')}
-            subtitle={t('News and events, with supporting context.')}
-          />
+        </div>
+      </Heading>
+      {!supported ? (
+        <div className="price-state">
           <p>
-            {t('Search fresh company and industry news with Tavily on the independent News page.')}
-          </p>
-          <Link className="text-button" to={`/news?q=${encodeURIComponent(report.company.name)}`}>
-            {' '}
-            {t('Read related news →')}{' '}
-          </Link>
-        </Card>
-      </div>
-      <div className="section-heading">
-        <h3>{t('Ready to connect the facts?')}</h3>
-        <Link className="button primary" to="/analysis">
-          {' '}
-          {t('Open contextual analysis')} <ArrowRight size={16} />
-        </Link>
-      </div>
-    </>
-  );
-}
-export function Analysis({ report, onEvidence }) {
-  const { t } = useLanguage();
-  const [kind, setKind] = useState('quarterly');
-  const cash = cashConversion(report.financials, kind);
-  return (
-    <>
-      <Heading
-        title={`${report.company.ticker || report.company.name} / ${t('Understanding the evidence')}`}
-        subtitle={t('An academic reading of operating results, market context, and uncertainty.')}
-      >
-        <Pill tone="caution">{t('AI INTERPRETATION')}</Pill>
-      </Heading>
-      <Card className="navy">
-        <small>{t('The question')}</small>
-        <h2>{report.analysis.question || t('What does the available evidence tell us?')}</h2>
-        <p>{report.summary}</p>
-      </Card>
-      <div className="grid three">
-        {report.analysis.observations.map((observation, i) => (
-          <Card key={i} className={['teal', 'caution', 'subtle'][i % 3]}>
-            <Pill tone="neutral">
-              {t('OBSERVATION')} {String(i + 1).padStart(2, '0')}
-            </Pill>
-            <h3>{observation.title}</h3>
-            <p>
-              {observation.detail} <Sources ids={observation.sourceIds} report={report} />
-            </p>
-            <details>
-              <summary>{t('Alternative explanation & next step')}</summary>
-              <p>{observation.alternative}</p>
-              <h4>{t('What would change this view?')}</h4>
-              <p>{observation.nextStep}</p>
-            </details>
-          </Card>
-        ))}
-      </div>
-      <Heading
-        title={t('Read the patterns together')}
-        subtitle={t('Use comparable periods and inspect the evidence behind each relationship.')}
-      />
-      <div className="grid two">
-        <Card>
-          <Heading
-            title={t('Operating cash flow / net income')}
-            subtitle={t('Calculated from sourced financial statements')}
-          >
-            <select
-              value={kind}
-              onChange={(event) => setKind(event.target.value)}
-              aria-label={t('Cash conversion period')}
-            >
-              <option value="quarterly">{t('Quarterly')}</option>
-              <option value="annual">{t('Annual')}</option>
-            </select>
-          </Heading>
-          <LineChart
-            points={cash}
-            valueKey="ratio"
-            label={t('Cash conversion')}
-            suffix="×"
-            report={report}
-          />
-          <p className="small muted">
-            {' '}
             {t(
-              'Operating cash flow ÷ net income for the same reported period and known accounting scope. Non-positive net income and unknown or incompatible scopes are excluded.',
-            )}{' '}
+              'Price history is available only for supported Vietnamese listings with a ticker and exchange.',
+            )}
           </p>
-        </Card>
-        <Card className="caution">
-          <h3>{t('What is still uncertain?')}</h3>
-          {report.analysis.risks.length ? (
-            <ul>
-              {report.analysis.risks.map((risk, i) => (
-                <li key={i}>{risk}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>{t('No specific risk assessment was returned.')}</p>
-          )}
-          <button className="button" onClick={onEvidence}>
-            {' '}
-            {t('Assumptions & limitations')}{' '}
+        </div>
+      ) : busy ? (
+        <div className="price-state" role="status">
+          <LoaderCircle size={24} className="spin" />
+          <p>{t('Loading historical prices from Vietstock…')}</p>
+        </div>
+      ) : error ? (
+        <div className="price-state" role="alert">
+          <p>{t('Price history is currently unavailable.')}</p>
+          <p className="small muted">{t(error)}</p>
+          <button className="button" onClick={() => setAttempt((value) => value + 1)}>
+            {t('Retry prices')}
           </button>
-        </Card>
-      </div>
-      <Heading
-        title={t('Follow each statement back to evidence')}
-        subtitle={t('Reported facts, calculations, and interpretations are kept distinct.')}
-      />
-      <Card>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>{t('Evidence / type')}</th>
-                <th>{t('Observation')}</th>
-                <th>{t('Alternative / limit')}</th>
-                <th>{t('Sources')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.analysis.observations.map((item, i) => (
-                <tr key={i}>
-                  <td>
-                    {t('E')}
-                    {String(i + 1).padStart(2, '0')} {t('· Interpretation')}
-                  </td>
-                  <td>{item.detail}</td>
-                  <td>{item.alternative}</td>
-                  <td>
-                    <Sources ids={item.sourceIds} report={report} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
-      </Card>
-      <Card className="teal">
-        <h3>{t('A useful conclusion remains conditional.')}</h3>
-        <p>{report.analysis.conclusion || t('There is insufficient evidence for a conclusion.')}</p>
-        <div className="section-heading">
-          <Link className="button" to="/market">
-            {' '}
-            {t('Inspect financial history')}{' '}
-          </Link>
-          <Link className="button" to={`/news?q=${encodeURIComponent(report.company.name)}`}>
-            {' '}
-            {t('Read related news →')}{' '}
-          </Link>
-        </div>
-      </Card>
-    </>
-  );
-}
-export function Targets({ report, onRules }) {
-  const { t, formatNumber, formatDate } = useLanguage();
-  const [days, setDays] = useState(90);
-  const summary = summarizeTargets(report, days);
-  const included = summary.rows.filter((row) => row.included);
-  return (
-    <>
-      <Heading
-        title={t('Price targets, with the reasoning attached')}
-        subtitle={t(
-          'Compare published research estimates and inspect the assumptions behind each one.',
-        )}
-      >
-        <Pill>{t('THIRD-PARTY REPORTS')}</Pill>
-      </Heading>
-      <Card>
-        <div className="section-heading">
-          <span>{report.company.name}</span>
-          <div className="actions">
-            <select
-              aria-label={t('Target inclusion window')}
-              value={days}
-              onChange={(event) => setDays(Number(event.target.value))}
-            >
-              <option value={90}>{t('Within 90 days')}</option>
-              <option value={180}>{t('Within 180 days')}</option>
-              <option value={365}>{t('Within 12 months')}</option>
-            </select>
-            <button className="button" onClick={onRules}>
-              {' '}
-              {t('Inclusion rules ⓘ')}{' '}
-            </button>
-          </div>
-        </div>
-      </Card>
-      <CompanyBanner report={report} dark />
-      <div className="grid three">
-        <Card className="metric">
-          <small className="muted">{t('Comparable reports')}</small>
-          <strong>
-            {summary.count} {t('of')} {report.targets.length}
-          </strong>
-          <small>
-            {t('Latest report per firm, within')} {days} {t('days.')}
-          </small>
-        </Card>
-        <Card className="metric teal">
-          <small>{t('Lowest / highest')}</small>
-          <strong>
-            {summary.count
-              ? `${formatNumber(summary.low)}–${formatNumber(summary.high)} ${report.quote.currency}`
-              : t('Not available')}
-          </strong>
-          <small>{t('Range across included reports.')}</small>
-        </Card>
-        <Card className="metric caution">
-          <small>{t('Median target')}</small>
-          <strong>{formatNumber(summary.median, ` ${report.quote.currency}`)}</strong>
-          <small>{t("An author's estimate, not a forecast by FinScope.")}</small>
-        </Card>
-      </div>
-      <Card>
-        <Heading
-          title={t('How widely do the estimates differ?')}
-          subtitle={t('Only targets with a confirmed comparable share basis enter this view.')}
-        />
-        {included.length ? (
-          <div className="target-bars">
-            {included.map((target, i) => (
-              <div key={i}>
-                <div className="section-heading">
-                  <strong>{target.firm}</strong>
-                  <span>{formatNumber(target.target, ` ${target.currency}`)}</span>
-                </div>
-                <meter
-                  min="0"
-                  max={Math.max(summary.high, report.quote.price || 0) * 1.1}
-                  value={target.target}
-                />
-                <small className="muted">
-                  {target.difference === null
-                    ? t('Market comparison unavailable')
-                    : `${target.difference > 0 ? '+' : ''}${formatNumber(target.difference, '%')} ${t('vs. dated market reference')}`}
-                </small>
+      ) : (
+        <>
+          {latest && (
+            <div className="price-summary">
+              <div>
+                <small className="muted">{t('Latest closing price')}</small>
+                <strong>{formatNumber(latest.close, ' VND')}</strong>
+                <small className="muted">{formatDate(latest.date)}</small>
               </div>
-            ))}
-          </div>
-        ) : (
-          <Empty title={t('No comparable target range')}>
-            {' '}
-            {t(
-              'Reports may be unavailable, outdated, missing explicit targets, or use an unconfirmed share basis.',
-            )}{' '}
-          </Empty>
+              {change !== null && (
+                <div className={change < 0 ? 'negative' : 'positive'}>
+                  <strong>
+                    {change > 0 ? '+' : ''}
+                    {formatNumber(change, '%')}
+                  </strong>
+                  <small>{t('Change in selected period')}</small>
+                </div>
+              )}
+              <span className="small muted">
+                {points.length} {t('trading observations')}
+              </span>
+            </div>
+          )}
+          <LineChart points={points} report={prices} suffix=" VND" />
+          {points.length > 0 && (
+            <p className="small muted">
+              {formatDate(points[0].date)} – {formatDate(latest.date)}
+            </p>
+          )}
+        </>
+      )}
+      <p className="small muted chart-footnote">
+        {t(
+          'Ranges use available trading days. Vietstock does not disclose adjustment basis; this chart is not used for target comparisons.',
         )}
-        <p className="small muted">
-          {' '}
-          {t(
-            'The range describes disagreement between reports. It is not a confidence interval or an expected return.',
-          )}{' '}
-        </p>
-      </Card>
-      <Heading
-        title={t('Research reports')}
-        subtitle={t('Open a report to inspect its thesis, assumptions, risks, and source.')}
-      />
-      <Card>
-        {summary.rows.length ? (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('Research firm')}</th>
-                  <th>{t('Target')}</th>
-                  <th>{t('Published')}</th>
-                  <th>{t('Horizon')}</th>
-                  <th>{t("Author's rating")}</th>
-                  <th>{t('vs. market')}</th>
-                  <th>{t('Details / source')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summary.rows.map((target, i) => (
-                  <tr key={i}>
-                    <td>
-                      <strong>{target.firm}</strong>
-                    </td>
-                    <td>{formatNumber(target.target, ` ${target.currency}`)}</td>
-                    <td>{formatDate(target.publishedAt)}</td>
-                    <td>{target.horizon || t('Not stated')}</td>
-                    <td>{target.rating || t('Not stated')}</td>
-                    <td>{formatNumber(target.difference, '%')}</td>
-                    <td>
-                      <details>
-                        <summary>{t('Details ↓')}</summary>
-                        <h4>{t('Thesis')}</h4>
-                        <p>{target.thesis}</p>
-                        <h4>{t('Valuation assumptions')}</h4>
-                        <p>{target.assumptions}</p>
-                        <h4>{t('Risks')}</h4>
-                        <p>{target.risks}</p>
-                        <p>
-                          {t('Share basis:')} {target.basis || t('Unknown')}
-                        </p>
-                        <Sources ids={target.sourceIds} report={report} />
-                      </details>
-                      <small className={target.included ? 'positive' : 'warning'}>
-                        {target.included ? t('Included') : t(target.reason)}
-                      </small>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <Empty title={t('No published targets found')}>
-            {' '}
-            {t(
-              'Gemini did not find publicly accessible brokerage targets. FinScope does not generate its own price estimates.',
-            )}{' '}
-          </Empty>
-        )}
-      </Card>
-      <div className="section-heading">
-        <Link className="button" to="/market">
-          {' '}
-          {t('View company financials')}{' '}
-        </Link>
-        <Link className="button primary" to="/analysis">
-          {' '}
-          {t('Read contextual analysis →')}{' '}
-        </Link>
-      </div>
-    </>
+      </p>
+    </Card>
   );
 }

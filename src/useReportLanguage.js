@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { requestError } from './requestError.js';
 
 export function useReportLanguage(report, language, enabled = true) {
   const cache = useRef(new Map());
@@ -14,7 +15,7 @@ export function useReportLanguage(report, language, enabled = true) {
   useEffect(() => {
     setError('');
     if (!enabled || !report || report.language === language) return;
-    const key = `${report.id}:${language}`;
+    const key = `${report.id}:${language}:${report.analysisStatus?.analyzedAt || report.analysisStatus?.state || ''}`;
     if (cache.current.has(key)) {
       setTranslated(cache.current.get(key));
       return;
@@ -40,7 +41,9 @@ export function useReportLanguage(report, language, enabled = true) {
       .catch((cause) => {
         if (!controller.signal.aborted || controller.signal.reason === 'timeout')
           setError(
-            controller.signal.aborted ? 'Translation timed out. Please retry.' : cause.message,
+            controller.signal.aborted
+              ? 'Translation timed out. Please retry.'
+              : requestError(cause),
           );
       })
       .finally(() => clearTimeout(timeout));
