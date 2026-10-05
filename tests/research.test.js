@@ -59,6 +59,8 @@ function formatted() {
 function input(client, extra = {}) {
   process.env.GEMINI_MODEL = 'grounded-test-' + ++modelId;
   return {
+    model: process.env.GEMINI_MODEL,
+    fallbackModel: null,
     query: 'FPT (HOSE)',
     language: 'vi',
     now,
@@ -82,7 +84,7 @@ function sequence(responses, calls = []) {
 }
 const json = (data = formatted()) => ({ text: JSON.stringify(data) });
 
-test('three-stage grounded flow uses env model, two Search calls and one JSON call', async () => {
+test('three-stage grounded flow uses an injected test model, two Search calls and one JSON call', async () => {
   const calls = [];
   const report = await researchCompany(
     input(
@@ -375,4 +377,119 @@ test('API language switch avoids translation and manual formatting consumes rema
     server.closeAllConnections();
     await new Promise((resolve) => server.close(resolve));
   }
+});
+
+test('primary quota switches once, skips enrichment and preserves the three-call cap', async () => {
+  const calls = [],
+    progress = [];
+  const settings = input(
+    sequence([{ status: 429, message: 'Too many requests' }, groundedFixture(), json()], calls),
+    {
+      fallbackModel: 'fallback-core-test',
+      includeIntel: true,
+      onProgress: (event) => progress.push(event),
+    },
+  );
+  const report = await researchCompany(settings);
+  assert.deepEqual(
+    calls.map((call) => call.model),
+    [settings.model, 'fallback-core-test', 'fallback-core-test'],
+  );
+  assert.equal(report.analysisStatus.state, 'ready');
+  assert.equal(report.requestUsage.requests, 3);
+  assert.equal(report.companyIntel, null);
+  assert.match(report.modelNotice, /Flash-Lite/);
+  assert.equal(
+    progress.some((event) => event.stage === 'fallback'),
+    true,
+  );
+  // A subsequent explicit search uses Lite directly while Flash is cooling down.
+  const later = [],
+    laterReport = await researchCompany({
+      ...settings,
+      client: sequence([groundedFixture(), json()], later),
+      includeIntel: false,
+      includeTargets: false,
+    });
+  assert.deepEqual(
+    later.map((call) => call.model),
+    ['fallback-core-test', 'fallback-core-test'],
+  );
+  assert.equal(laterReport.requestUsage.requests, 2);
+});
+
+test('formatter API errors switch to Lite only when a slot remains', async () => {
+  const calls = [];
+  const settings = input(sequence([groundedFixture(), { status: 503 }, json()], calls), {
+    fallbackModel: 'fallback-format-test',
+    includeTargets: false,
+  });
+  const report = await researchCompany(settings);
+  assert.equal(report.analysisStatus.state, 'ready');
+  assert.deepEqual(
+    calls.map((call) => call.model),
+    [settings.model, settings.model, 'fallback-format-test'],
+  );
+});
+
+test('malformed formatting switches once while a slot remains', async () => {
+  const calls = [];
+  const report = await researchCompany(
+    input(sequence([groundedFixture(), { text: '{bad' }, json()], calls), {
+      fallbackModel: 'fallback-json-test',
+      includeTargets: false,
+    }),
+  );
+  assert.equal(report.analysisStatus.state, 'ready');
+  assert.equal(calls[2].model, 'fallback-json-test');
+});
+
+test('both model errors stop after two attempts without retry loops', async () => {
+  const calls = [];
+  await assert.rejects(
+    researchCompany(
+      input(sequence([{ status: 503 }, { status: 503 }], calls), {
+        fallbackModel: 'fallback-both-test',
+      }),
+    ),
+    { status: 503 },
+  );
+  assert.equal(calls.length, 2);
+});
+
+test('safety blocks and cancellations never trigger a model switch', async () => {
+  for (const cancel of [false, true]) {
+    const calls = [],
+      controller = new AbortController();
+    const client = {
+      models: {
+        generateContent: async (args) => {
+          calls.push(args);
+          if (cancel) {
+            controller.abort();
+            throw Object.assign(new Error('cancelled'), { status: 499 });
+          }
+          return { promptFeedback: { blockReason: 'SAFETY' } };
+        },
+      },
+    };
+    await assert.rejects(
+      researchCompany(
+        input(client, { fallbackModel: 'fallback-block-test', signal: controller.signal }),
+      ),
+    );
+    assert.equal(calls.length, 1);
+  }
+});
+
+test('third-call errors do not trigger a fourth fallback request', async () => {
+  const calls = [];
+  const report = await researchCompany(
+    input(sequence([groundedFixture(), groundedFixture('No targets.'), { status: 503 }], calls), {
+      fallbackModel: 'fallback-cap-test',
+    }),
+  );
+  assert.equal(calls.length, 3);
+  assert.equal(report.analysisStatus.state, 'unavailable');
+  assert.equal(report.analysisStatus.retryAllowed, false);
 });

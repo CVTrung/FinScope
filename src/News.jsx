@@ -15,11 +15,18 @@ export default function News() {
   const [saved] = useState(loadNewsState);
   const [query, setQuery] = useState(params.get('q') || saved.query);
   const [days, setDays] = useState(saved.days);
-  const [result, setResult] = useState(saved.result);
+  const autoSearch = params.get('search') === '1' && resolveNewsCompany(params.get('q') || '');
+  const cachedMatch =
+    saved.result?.query === (params.get('q') || saved.query) &&
+    saved.result?.days === saved.days &&
+    saved.result?.language === language;
+  const [result, setResult] = useState(autoSearch && !cachedMatch ? null : saved.result);
   const lastResult = useRef(saved.result);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [searchRequest, setSearchRequest] = useState(null);
+  const [searchRequest, setSearchRequest] = useState(() =>
+    autoSearch && !cachedMatch ? { query: params.get('q').trim(), days: saved.days } : null,
+  );
   const visibleResult =
     result?.language === language && resolveNewsCompany(result.query)
       ? {

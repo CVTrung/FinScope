@@ -8,7 +8,11 @@ export class ResearchError extends Error {
   }
 }
 
-export { researchCompany, retryCompanyAnalysis, localizeCompanyReport } from './groundedResearch.js';
+export {
+  researchCompany,
+  retryCompanyAnalysis,
+  localizeCompanyReport,
+} from './groundedResearch.js';
 
 export function publicError(error) {
   const quota = error.gemini || quotaDetails(error, geminiModel());
@@ -44,8 +48,8 @@ export function publicError(error) {
     return {
       status: 503,
       message: /no longer available to new users|actively used.*past/i.test(error.message || '')
-        ? 'Google has restricted this Gemini model to existing users. Choose an available model for your API project in GEMINI_MODEL, then restart the server.'
-        : 'Google could not access the configured Gemini model. Check model availability for your API project and GEMINI_MODEL, then restart the server.',
+        ? 'Google has restricted this Gemini model to existing users. Check access to Gemini 2.5 Flash and Flash-Lite for your API project.'
+        : 'Google could not access the configured Gemini model. Check access to Gemini 2.5 Flash and Flash-Lite for your API project.',
     };
   if (status === 400 && /google.?search|grounding|search.*support/i.test(error.message || ''))
     return {

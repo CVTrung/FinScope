@@ -1,9 +1,10 @@
 import { useLanguage } from './i18n.jsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowUpRight, Search, X, Download } from 'lucide-react';
 import { safeUrl, validDate } from '../shared/report.js';
 import { freshness } from '../shared/evidence.js';
 import { reportCsv } from '../shared/reportCsv.js';
+import { companyAliases } from '../shared/companyAliases.js';
 
 export function EvidenceStatus({ row, date, report }) {
   const { t } = useLanguage();
@@ -78,37 +79,69 @@ export function Sources({ ids = [], report }) {
 export function ResearchForm({ onResearch, busy, blocked = false, initial = '', compact = false }) {
   const { t, language } = useLanguage();
   const [query, setQuery] = useState(initial);
+  const suggestionId = useId();
+  const inputRef = useRef(null);
   useEffect(() => setQuery(initial), [initial]);
   return (
-    <form
-      className={`research-form ${compact ? 'compact' : ''}`}
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (!busy && !blocked && query.trim().length >= 2) onResearch(query.trim(), language);
-      }}
-    >
-      <label className="search-input">
-        <Search size={19} />
-        <input
-          aria-label={t('Company or stock ticker')}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={t('Enter a company or ticker, e.g. FPT, AAPL, Vinamilk…')}
-          minLength={2}
-          maxLength={200}
-          required
-          disabled={busy}
-        />
-      </label>
-      <button
-        className="button primary"
-        disabled={busy || blocked || query.trim().length < 2}
-        type="submit"
+    <div className="research-search">
+      <form
+        className={`research-form ${compact ? 'compact' : ''}`}
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!busy && !blocked && query.trim().length >= 2) onResearch(query.trim(), language);
+        }}
       >
-        {busy ? t('Researching…') : blocked ? t('Please wait to retry') : t('Research company')}{' '}
-        {!busy && !blocked && <span>→</span>}
-      </button>
-    </form>
+        <label className="search-input">
+          <Search size={19} />
+          <input
+            aria-label={t('Company or stock ticker')}
+            value={query}
+            ref={inputRef}
+            list={suggestionId}
+            autoComplete="off"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t('Type a company or ticker, e.g. FPT, HPG, Vinamilk…')}
+            minLength={2}
+            maxLength={200}
+            required
+            disabled={busy}
+          />
+        </label>
+        <datalist id={suggestionId}>
+          {Object.entries(companyAliases).map(([ticker, names]) => (
+            <option key={ticker} value={ticker} label={names.join(' · ')} />
+          ))}
+        </datalist>
+        <button
+          className="button primary"
+          disabled={busy || blocked || query.trim().length < 2}
+          type="submit"
+        >
+          {busy ? t('Researching…') : blocked ? t('Please wait to retry') : t('Research company')}{' '}
+          {!busy && !blocked && <span>→</span>}
+        </button>
+      </form>
+      {!compact && (
+        <div className="company-suggestions" aria-label={t('Company suggestions')}>
+          <span>{t('Suggestions')}:</span>
+          {['FPT', 'HPG', 'VNM', 'VCB', 'MWG', 'VIC'].map((ticker) => (
+            <button
+              key={ticker}
+              type="button"
+              disabled={busy}
+              title={companyAliases[ticker][0]}
+              onClick={() => {
+                setQuery(ticker);
+                inputRef.current?.focus();
+              }}
+            >
+              <strong>{ticker}</strong>
+              <span>{companyAliases[ticker][0]}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 export function CompanyBanner({ report, dark = false }) {

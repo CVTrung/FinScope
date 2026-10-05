@@ -1,5 +1,24 @@
 # Verification — 5 October 2026
 
+## Expanded second-model coverage — 5 October 2026
+
+- Identified sparse financial-only inputs, brief primary research instructions, duplicate-URL source-ID overwrites, and all-or-nothing numeric acceptance as coverage bottlenecks.
+- Primary grounded research now requests a broader business/event/valuation dossier. Public Vietstock listings and original pBody/pLead article paragraphs supplement that evidence before the no-Search second call. Bound: two listing pages, ten article pages, four parallel reads, 25-second workflow timeout. News stays standalone; no SerpApi requests or extra Gemini calls are introduced.
+- The second prompt requests separate supported business, project, balance-sheet, governance, sector and valuation topics, detailed summaries when article text supports them, and a consolidated company watchlist. Unsupported sentences/fields are trimmed without rejecting remaining useful content. All IDs sharing a URL are retained; references to valid supplied URLs can recover an omitted source-table entry.
+- Live final development probe: one `gemini-3.5-flash-lite` call with no tools, ten public dated HPG listings, five readable original article bodies. Model output accepted five articles, five insights, one watchlist and seven sources. Code retained the remaining five listings as explicitly marked excerpts without fabricated model assessments: final display ten updates, five insights, one watchlist, twelve sources. An earlier probe included publisher/sidebar paragraphs; observed markup was used to restrict extraction to original article classes, excluding unrelated stories and privacy text. The final output supersedes that earlier result.
+- This verifies the second model against saved public financials plus live public articles, not a fresh complete primary grounded Home report or independent verification of narrative claims. Browser replay verified all ten records and detailed insight rendering: `artifacts/company-intel-coverage-verified.png`.
+- Automated tests and production build passed. Temporary port-3002 replay server/tab stopped. Actual port-3000 server remains stopped as requested by the user.
+
+## Second Gemini intelligence function — 5 October 2026
+
+- Added `researchCompanyIntel` with the supplied prompt copied into `server/prompts/companyIntel.md`. The website adapts its company/ticker and language to the Excel reference's articles, insights, watchlist, sources and limitations. Dates use Vietnam time, a three-month window and at most ten articles.
+- The second model is `GEMINI_INTEL_MODEL`, default `gemini-3.5-flash-lite`. **No Search grounding or other tools** are supplied to this call. It organizes primary Gemini/Vietstock evidence only. Home's sequence is primary grounded research, second-model structured intelligence, primary structured report formatting. Total GenerateContent attempts remain capped at three. News remains independent.
+- The model metadata endpoint disclosed an output limit of 65,536. The intelligence stage uses a smaller 16,000 output budget under the existing 36,000 ceiling, with LOW thinking and the shared quota/no-retry handling.
+- Live development verification used saved public HPG quarterly evidence. Final probe succeeded with one no-Search call, one accepted insight, one watch point and two supplied sources. No articles were produced because this evidence did not include dated news. Earlier development probes exposed over-strict quarter-label and display-rounding checks; these were corrected and covered by tests. This does **not** establish a new complete live three-stage Home research report or independently verify model interpretations.
+- Unknown URLs, invalid/future/out-of-window publication dates, unrelated tickers and numbers absent from selected supporting evidence are excluded. Display rounding is accepted. Every new section remains labeled sources provided; individual claims not verified. Code checks cannot prove all narrative interpretations.
+- **104 automated tests passed**, including model separation, no second-model Search tools, request ceiling, cache retention, quota stop, malformed JSON, dates, source allowlist and rounding. Production build passed. Browser replay verified accepted live HPG insights, collapsed source links, saved-report persistence and all three tabs; explicit FPT sample data verified article fact/interpretation controls. Screenshot: `artifacts/company-intel-ui-verified.png`.
+- Temporary port-3002 replay server/tab were closed. Actual port-3000 health confirmed primary `gemini-2.5-flash` from `.env`, second `gemini-3.5-flash-lite`, `intelSearchGrounding=false`, three-request limit and configured News. Actual dev server was left running.
+
 ## Expanded Vietstock quarterly history — 5 October 2026
 
 - Live HPG request with PageSize=12 returned only five columns. Page 2 returned older quarters and page 3 returned another five; larger page size alone was insufficient. The former parser cap also discarded page 1's fifth quarter, Q2 2025, needed for Q2 2026 year-on-year growth.
@@ -146,3 +165,32 @@ This workflow replaces the older two Search + formatting + audit sequence descri
 - Browser rendering of the audited live artifact showed the two dated Mirae Asset reports and explicitly unavailable target statistics because share-basis comparability and the dated quote were not established. A saved live Vietstock response supplied the chart; this browser fixture made no provider calls.
 - A simulated 429 verified the alert, disabled retry, countdown completion and successful manual retry of the retained query. Provider counters showed exactly 2 research attempts (initial rejection + user retry), no automatic retry. HTTP streaming errors now include status 429. Provider and fallback delay sources are tested separately.
 - Production preview restarted at http://localhost:3001; health confirms modelSource=environment. Full research uses 4 sequential Gemini calls (2 Search, formatting, audit). Source/period gates can omit valid figures when citation context is incomplete. Existing saved reports require fresh Home research to receive the audit. Cloud deployment remains unverified.
+
+
+## Fixed model fallback — 2026-10-05
+
+Main research: gemini-2.5-flash → gemini-2.5-flash-lite. Separate intelligence: gemini-3.5-flash → gemini-3.5-flash-lite, without Search. Environment model overrides are ignored. Mock provider tests cover quota cooldown routing, errors, malformed formatting, secondary fallback, safety/cancellation and the shared three-attempt ceiling. Live metadata reads confirmed all four exact IDs available to the configured API key, each reporting a 65,536-token output limit; this does not prove live generation quota or Search permission. No live generation requests were made. Website server remains stopped.
+
+
+## Report layout and News shortcut — 2026-10-05
+
+Growth and financial statements now follow the price chart directly, before second-model intelligence. Removed the second-model Sources & limitations tab while retaining collapsed per-record sources and the evidence-status label. Insight/watchlist risk sections are now labelled Factors to monitor / Các yếu tố cần theo dõi. The report News action uses the original Home query and explicitly starts an independent News search; matching cached query/window/language can be reused. Ordinary time selection remains manual.
+
+115 existing tests and the production build passed. Browser replay verified section order, two remaining intelligence tabs, six renamed monitoring disclosures, automatic HPG News results, and submitting the same company with a new window. Replay logged exactly one search at 30 days and one explicit submission at 7 days; changing the selector alone did not search. News results were explicit UI samples; no live provider calls were made. Screenshot: artifacts/report-layout-verified.png. Temporary preview closed/stopped.
+
+
+## Automatic company-news sidebar — 2026-10-05
+
+The existing report-sidebar position now contains automatic 30-day Google News retrieval using the original Home query and selected language. Three headlines show initially, with expandable remaining articles (up to ten), publisher/date, per-article summaries, optional thumbnails, original links, refresh/retry, and the full News filters shortcut. Per-company/language results persist for fifteen minutes in session storage; shared in-flight promises avoid duplicate StrictMode requests. Invalid/old/future/wrong-company/duplicate articles are excluded. News remains independent of Gemini/report content.
+
+118 tests and production build passed. New tests verify date/company/URL filtering, deduplication, sorting, in-flight/cache reuse, explicit refresh, language separation and retry after errors. Browser replay verified six explicit sample articles, more-news expansion, expanded summary and the same sidebar position. Screenshot: artifacts/company-news-preview-verified.png. Only one replay News request logged; no live provider requests made. Temporary server/tab stopped/closed.
+
+
+## Home News entry redesign — 2026-10-05
+
+The previous section had no image asset. Replaced empty visual space with a local CSS/SVG newspaper illustration, compact grid layout, dated-headlines/original-publisher feature labels and a prominent News action. Desktop layout and News navigation verified in the browser; production build passed. CSS includes tablet/mobile stacking, not separately browser-verified. Screenshot: artifacts/home-news-entry-redesign.png. Temporary preview closed/stopped.
+
+
+## Home company suggestions — 2026-10-05
+
+Added the existing 36 Vietnamese company alias entries to a native input suggestion list, plus six visible ticker/name choices (FPT, HPG, VNM, VCB, MWG, VIC). Choosing a quick suggestion fills/focuses the input without starting research. Build passed. Browser verified VNM selection enables the research button, the list contains 36 entries, and the visible chips render correctly. Screenshot: artifacts/home-company-suggestions.png. Temporary preview stopped and tab closed; no live Gemini calls.

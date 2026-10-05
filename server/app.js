@@ -100,6 +100,7 @@ export function createApp({
       const report = await research({
         query,
         language,
+        includeIntel: true,
         signal: controller.signal,
         onProgress: (data) => {
           if (streaming) send({ type: 'progress', ...data });

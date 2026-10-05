@@ -11,7 +11,7 @@ import { publicError } from '../server/research.js';
 import { generateJson } from '../server/localization.js';
 import { z } from 'zod';
 
-test('environment model is trimmed and used consistently by research and translation', async () => {
+test('primary model ignores environment overrides in research and translation', async () => {
   const previous = process.env.GEMINI_MODEL;
   process.env.GEMINI_MODEL = '  test-env-model  ';
   const calls = [];
@@ -24,13 +24,13 @@ test('environment model is trimmed and used consistently by research and transla
     },
   };
   try {
-    assert.equal(geminiModel(), 'test-env-model');
-    assert.equal(geminiStatus().modelSource, 'environment');
+    assert.equal(geminiModel(), 'gemini-2.5-flash');
+    assert.equal(geminiStatus().modelSource, 'fixed');
     await generateGemini({ model: geminiModel(), contents: 'test' }, { client });
     await generateJson({ prompt: 'test', schema: z.object({}), client });
-    assert.deepEqual(calls, ['test-env-model', 'test-env-model']);
+    assert.deepEqual(calls, ['gemini-2.5-flash', 'gemini-2.5-flash']);
     delete process.env.GEMINI_MODEL;
-    assert.equal(geminiStatus().modelSource, 'default');
+    assert.equal(geminiStatus().modelSource, 'fixed');
   } finally {
     if (previous === undefined) delete process.env.GEMINI_MODEL;
     else process.env.GEMINI_MODEL = previous;

@@ -8,7 +8,12 @@ import { geminiStatus } from './gemini.js';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 dotenv.config({ path: resolve(root, '.env'), quiet: true });
 const config = geminiStatus();
-console.log(`Gemini model: ${config.model} (${config.modelSource}; restart after .env changes)`);
+console.log(
+  `Gemini model: ${config.model} (${config.modelSource}; fallback: ${config.fallbackModel})`,
+);
+console.log(
+  `Company intelligence model: ${config.intelModel} (fallback: ${config.intelFallbackModel}; no Search grounding)`,
+);
 const app = createApp();
 const production = process.argv.includes('--production') || process.env.NODE_ENV === 'production';
 if (production) {

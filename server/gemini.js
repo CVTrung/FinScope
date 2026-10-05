@@ -1,9 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
 import { groundingStatus } from './grounding.js';
 
-export const defaultGeminiModel = 'gemini-3.5-flash-lite';
+export const defaultGeminiModel = 'gemini-2.5-flash';
+export const fallbackGeminiModel = 'gemini-2.5-flash-lite';
 export function geminiModel() {
-  return process.env.GEMINI_MODEL?.trim() || defaultGeminiModel;
+  return defaultGeminiModel;
 }
 
 // GenerateContent uses camelCase tool names; Interactions uses a different API shape.
@@ -17,7 +18,11 @@ let lastError = null;
 export function geminiStatus() {
   return {
     model: geminiModel(),
-    modelSource: process.env.GEMINI_MODEL?.trim() ? 'environment' : 'default',
+    intelModel: 'gemini-3.5-flash',
+    intelFallbackModel: 'gemini-3.5-flash-lite',
+    intelSearchGrounding: false,
+    modelSource: 'fixed',
+    fallbackModel: fallbackGeminiModel,
     api: 'generateContent',
     apiVersion: 'v1beta',
     groundingTool: 'googleSearch',

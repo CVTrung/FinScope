@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock3, FileText, Check, Minus, LoaderCircle } from 'lucide-react';
 import { Valuation } from './Valuation.jsx';
+import CompanyIntel from './CompanyIntel.jsx';
+import CompanyNews from './CompanyNews.jsx';
 import { priceWindow, priceRanges } from './priceWindow.js';
 import { reportView, financialFields } from './reportView.js';
 import {
@@ -36,15 +38,39 @@ export function Home({ onResearch, busy, searchBlocked, history, onSelect, onCle
         </p>
       </section>
       <Card className="news-entry">
-        <div>
+        <div className="news-entry-visual" aria-hidden="true">
+          <div className="news-entry-paper">
+            <FileText size={28} strokeWidth={1.5} />
+            <span className="news-paper-line" />
+            <span className="news-paper-line short" />
+            <div className="news-paper-columns">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+          <span className="news-entry-badge">
+            <Check size={16} />
+          </span>
+        </div>
+        <div className="news-entry-copy">
           <Pill>{t('INDEPENDENT NEWS')}</Pill>
           <h2>{t('Just looking for company news?')}</h2>
           <p className="muted">
             {t('Search Vietnamese companies and stocks without creating a research report.')}
           </p>
+          <div className="news-entry-features">
+            <span>
+              <Clock3 size={14} />
+              {t('Dated headlines')}
+            </span>
+            <span>
+              <FileText size={14} />
+              {t('Original publishers')}
+            </span>
+          </div>
         </div>
-        <Link className="button" to="/news">
-          <FileText size={17} />
+        <Link className="button primary news-entry-action" to="/news">
           {t('Open News')}
           <ArrowRight size={16} />
         </Link>
@@ -177,21 +203,6 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
       <div className="report-columns">
         <div className="stack report-main">
           <PriceHistory report={report} />
-          {report.analysisStatus && (
-            <AnalysisStatus report={report} onUpdateReport={onUpdateReport} />
-          )}
-          {report.quoteAlternatives?.length > 0 && (
-            <details className="small">
-              <summary>{t('Conflicting sourced prices')}</summary>
-              <p>{t('Different sourced values are shown separately. No average is used.')}</p>
-              {report.quoteAlternatives.map((quote, index) => (
-                <p key={index}>
-                  {formatNumber(quote.price, ` ${quote.currency}`)} · {quote.asOf}{' '}
-                  <Sources ids={quote.sourceIds} report={report} />
-                </p>
-              ))}
-            </details>
-          )}
           {view.financials.length > 0 && (
             <Card className="teal">
               <Heading
@@ -328,6 +339,28 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
                 </table>
               </div>
             </Card>
+          )}
+
+          {report.modelNotice && (
+            <p className="small muted" role="status">
+              {report.modelNotice}
+            </p>
+          )}
+          {report.analysisStatus && (
+            <AnalysisStatus report={report} onUpdateReport={onUpdateReport} />
+          )}
+          <CompanyIntel data={report.companyIntel} />
+          {report.quoteAlternatives?.length > 0 && (
+            <details className="small">
+              <summary>{t('Conflicting sourced prices')}</summary>
+              <p>{t('Different sourced values are shown separately. No average is used.')}</p>
+              {report.quoteAlternatives.map((quote, index) => (
+                <p key={index}>
+                  {formatNumber(quote.price, ` ${quote.currency}`)} · {quote.asOf}{' '}
+                  <Sources ids={quote.sourceIds} report={report} />
+                </p>
+              ))}
+            </details>
           )}
 
           {report.conflicts?.length > 0 && (
@@ -528,20 +561,7 @@ export function CompanyReport({ report, onEvidence, onUpdateReport }) {
             </Card>
           )}
 
-          <Card className="report-news">
-            <FileText size={20} />
-            <h3>{t('Follow company news')}</h3>
-            <p className="small muted">
-              {t('News is searched separately and is not part of this snapshot.')}
-            </p>
-            <Link
-              className="button"
-              to={`/news?q=${encodeURIComponent(report.company.ticker || report.company.name)}`}
-            >
-              {t('Open News')}
-              <ArrowRight size={15} />
-            </Link>
-          </Card>
+          <CompanyNews key={report.id} report={report} />
         </aside>
       </div>
       {report.targets.length > 0 && <Valuation report={report} />}
