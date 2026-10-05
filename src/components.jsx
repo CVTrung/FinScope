@@ -241,6 +241,18 @@ export function Evidence({ report }) {
           </ul>
         </Card>
       </div>
+      {report.requestUsage?.stages?.length > 0 && (
+        <details>
+          <summary>{t('Model request history')}</summary>
+          {report.requestUsage.stages.map((attempt, i) => (
+            <p className="small" key={i}>
+              {i + 1}. {attempt.stage} · {attempt.model || report.model} ·{' '}
+              {t(attempt.state || 'received')}
+              {attempt.status ? ` (${attempt.status})` : ''}
+            </p>
+          ))}
+        </details>
+      )}
       <h3>
         {t('Source library ·')} {report.sources.length}
       </h3>
@@ -303,24 +315,52 @@ export function SearchSuggestions({ report }) {
 }
 export function ExportButton({ report }) {
   const { t, language } = useLanguage();
-  function download() {
-    const url = URL.createObjectURL(
-      new Blob([reportCsv(report, language)], {
-        type: 'text/csv;charset=utf-8',
-      }),
-    );
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `finscope-${(report.company.ticker || 'report').replace(/[^a-z0-9-]/gi, '')}-${report.generatedAt.slice(0, 10)}.csv`;
-    anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  async function download(format) {
+    setError('');
+    setBusy(true);
+    try {
+      let blob;
+      if (format === 'xlsx') {
+        const response = await fetch('/api/export-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ report, language }),
+          signal: AbortSignal.timeout(30000),
+        });
+        if (!response.ok) throw new Error('Excel export failed. Please try again.');
+        blob = await response.blob();
+      } else blob = new Blob([reportCsv(report, language)], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `finscope-${(report.company.ticker || 'report').replace(/[^a-z0-9-]/gi, '')}-${report.generatedAt.slice(0, 10)}.${format}`;
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError('Excel export failed. Please try again.');
+    } finally {
+      setBusy(false);
+    }
   }
   return (
-    <button className="button" onClick={download}>
-      <Download size={15} /> {t('Export report')}{' '}
-    </button>
+    <div className="export-options">
+      <button className="button" disabled={busy} onClick={() => download('csv')}>
+        <Download size={15} /> CSV
+      </button>
+      <button className="button" disabled={busy} onClick={() => download('xlsx')}>
+        <Download size={15} /> {busy ? t('Exporting…') : 'Excel (.xlsx)'}
+      </button>
+      {error && (
+        <span className="small" role="alert">
+          {t(error)}
+        </span>
+      )}
+    </div>
   );
 }
+
 export function LineChart({ points, valueKey = 'close', label = 'Price', suffix = '', report }) {
   const { t, language, formatNumber } = useLanguage();
   const [active, setActive] = useState(null);

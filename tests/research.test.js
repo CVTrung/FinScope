@@ -399,6 +399,9 @@ test('primary quota switches once, skips enrichment and preserves the three-call
   assert.equal(report.requestUsage.requests, 3);
   assert.equal(report.companyIntel, null);
   assert.match(report.modelNotice, /Flash-Lite/);
+  assert.equal(report.requestUsage.stages[0].state, 'failed');
+  assert.equal(report.requestUsage.stages[0].status, 429);
+  assert.equal(report.requestUsage.stages.length, 3);
   assert.equal(
     progress.some((event) => event.stage === 'fallback'),
     true,
@@ -491,5 +494,7 @@ test('third-call errors do not trigger a fourth fallback request', async () => {
   );
   assert.equal(calls.length, 3);
   assert.equal(report.analysisStatus.state, 'unavailable');
+  assert.equal(report.analysisStatus.failedModel, calls[2].model);
+  assert.equal(report.analysisStatus.fallbackUsed, false);
   assert.equal(report.analysisStatus.retryAllowed, false);
 });

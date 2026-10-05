@@ -611,6 +611,17 @@ function AnalysisStatus({ report, onUpdateReport }) {
       setBusy(false);
     }
   }
+  if (status.state === 'partial')
+    return (
+      <Card className="subtle" role="status">
+        <h3>{t('Company intelligence is ready')}</h3>
+        <p className="small muted">
+          {t(
+            'Additional report formatting was skipped to stay within three Gemini requests. Available sourced data and second-model analysis are preserved.',
+          )}
+        </p>
+      </Card>
+    );
   if (status.state === 'ready')
     return report.analysis.observations.length ? null : (
       <p className="small muted">
@@ -627,6 +638,14 @@ function AnalysisStatus({ report, onUpdateReport }) {
         )}
       </h3>
       <p>{t(status.message)}</p>
+      {status.failedModel && (
+        <p className="small">
+          {t('Model that failed')}: {status.failedModel}
+        </p>
+      )}
+      {status.fallbackUsed && (
+        <p className="small">{t('A fallback model was attempted during this search.')}</p>
+      )}
       {status.status === 429 && report.workflow !== 'grounded-research-v2' && (
         <p className="small">
           {t('Gemini has reached a request or quota limit. Please wait and try again.')}

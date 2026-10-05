@@ -292,7 +292,7 @@ test('second model quota stops the flow and never retries or calls final formatt
   assert.equal(report.companyIntel, null);
 });
 
-test('intelligence errors switch to 3.5 Lite without Search and retain partial data at the cap', async () => {
+test('successful intelligence fallback finishes with validated facts instead of a fourth formatting error', async () => {
   const calls = [],
     responses = [
       {
@@ -321,14 +321,16 @@ test('intelligence errors switch to 3.5 Lite without Search and retain partial d
   const originalNow = Date.now;
   Date.now = () => originalNow() + 20000;
   try {
-    const report = await researchCompany({
-      query: 'FPT',
+    const input = {
+      query: 'FPT (HOSE)',
       now,
       client,
       includeIntel: true,
+      cache: true,
       vietstock: async () => vietstockFixture(),
       prices: async () => priceFixture(),
-    });
+    };
+    const report = await researchCompany(input);
     assert.deepEqual(
       calls.map((call) => call.model),
       ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'],
@@ -336,7 +338,17 @@ test('intelligence errors switch to 3.5 Lite without Search and retain partial d
     assert.equal(calls[2].config.tools, undefined);
     assert.equal(report.companyIntel.model, 'gemini-3.5-flash-lite');
     assert.equal(report.requestUsage.requests, 3);
-    assert.equal(report.analysisStatus.state, 'unavailable');
+    assert.equal(report.analysisStatus.state, 'partial');
+    assert.equal(report.analysisStatus.status, undefined);
+    assert.equal(report.analysisStatus.retryAllowed, false);
+    assert.equal(report.financials.length, 2);
+    assert.equal(report.companyIntel.articles.length, 1);
+    assert.equal(
+      report.warnings.some((message) => /three-request research limit was reached/.test(message)),
+      false,
+    );
+    assert.equal((await researchCompany(input)).id, report.id);
+    assert.equal(calls.length, 3);
     assert.match(report.modelNotice, /3.5 Flash-Lite/);
   } finally {
     Date.now = originalNow;

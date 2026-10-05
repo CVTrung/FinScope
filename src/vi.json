@@ -557,5 +557,15 @@
   "Original publishers": "Nguồn báo gốc",
   "Company suggestions": "Gợi ý doanh nghiệp",
   "Suggestions": "Gợi ý",
-  "Type a company or ticker, e.g. FPT, HPG, Vinamilk…": "Nhập tên doanh nghiệp hoặc mã cổ phiếu, ví dụ FPT, HPG, Vinamilk…"
+  "Type a company or ticker, e.g. FPT, HPG, Vinamilk…": "Nhập tên doanh nghiệp hoặc mã cổ phiếu, ví dụ FPT, HPG, Vinamilk…",
+  "Model that failed": "Mô hình gặp lỗi",
+  "A fallback model was attempted during this search.": "Nghiên cứu này đã thử mô hình dự phòng.",
+  "Model request history": "Lịch sử gọi mô hình",
+  "received": "Đã nhận phản hồi",
+  "failed": "Gặp lỗi",
+  "Exporting…": "Đang xuất…",
+  "Excel export failed. Please try again.": "Không thể xuất Excel. Vui lòng thử lại.",
+  "Company intelligence is ready": "Phân tích chuyên sâu đã hoàn tất",
+  "Additional report formatting was skipped to stay within three Gemini requests. Available sourced data and second-model analysis are preserved.": "Đã giữ nguyên dữ liệu có nguồn và phân tích của mô hình thứ hai. Bỏ qua lượt định dạng bổ sung để không vượt quá ba lượt Gemini.",
+  "Company intelligence is available. Additional report formatting was skipped to stay within the three-request limit. Only validated supporting figures are displayed.": "Đã có phân tích chuyên sâu. Bỏ qua định dạng bổ sung để không vượt quá ba lượt Gemini. Chỉ hiển thị số liệu hỗ trợ đã qua kiểm tra trong ứng dụng."
 }

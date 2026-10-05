@@ -12,6 +12,7 @@ import { translateReport } from './localization.js';
 import { reportSchema } from '../shared/report.js';
 import { newsWindows } from '../shared/news.js';
 import { resolveNewsCompany } from '../shared/companyAliases.js';
+import { reportExcel } from './reportExcel.js';
 
 export function createApp({
   research = researchCompany,
@@ -21,6 +22,21 @@ export function createApp({
   analyze = retryCompanyAnalysis,
 } = {}) {
   const app = express();
+  app.post('/api/export-report', express.json({ limit: '5mb' }), async (req, res) => {
+    if (
+      !reportSchema.safeParse(req.body?.report).success ||
+      !['vi', 'en'].includes(req.body?.language)
+    )
+      return res.status(400).json({ error: 'Invalid report or language.' });
+    try {
+      const buffer = await reportExcel(req.body.report, req.body.language);
+      res
+        .type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        .send(Buffer.from(buffer));
+    } catch {
+      res.status(500).json({ error: 'Excel export failed. Please try again.' });
+    }
+  });
   app.post('/api/translate-report', express.json({ limit: '1mb' }), async (req, res) => {
     if (
       !reportSchema.safeParse(req.body?.report).success ||

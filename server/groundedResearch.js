@@ -97,18 +97,22 @@ async function requestOnce(
   );
   if (model === snapshot.model) snapshot.outputLimit = limit;
   snapshot.calls++; // Count failed, blocked, truncated and malformed attempts too.
-  const response = await generateGemini(
-    {
-      model,
-      contents,
-      config: { ...stageConfig(model, limit, stage, signal), ...extra },
-    },
-    { client, apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY },
-  );
+  const attempt = { stage, model, state: 'failed', outputTokens: 0, thinkingTokens: 0 };
+  snapshot.usage.push(attempt);
+  let response;
+  try {
+    response = await generateGemini(
+      { model, contents, config: { ...stageConfig(model, limit, stage, signal), ...extra } },
+      { client, apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY },
+    );
+  } catch (error) {
+    error.failedModel = model;
+    attempt.status = Number(error.status || error.code) || 502;
+    throw error;
+  }
   const usage = response.usageMetadata || {};
-  snapshot.usage.push({
-    stage,
-    model,
+  Object.assign(attempt, {
+    state: 'received',
     outputTokens: usage.candidatesTokenCount || 0,
     thinkingTokens: usage.thoughtsTokenCount || 0,
   });
@@ -277,6 +281,8 @@ function decorate(report, snapshot, state, error) {
       state,
       message: safe ? safe.message : '',
       status: safe?.status,
+      failedModel: error?.failedModel || safe?.gemini?.model || '',
+      fallbackUsed: Boolean(snapshot.modelNotice),
       retryAllowed: !exhausted && snapshot.results.length > 0,
       requestsRemaining: 3 - snapshot.calls,
       retryAfterSeconds: safe?.gemini?.retryAfterSeconds || 0,
@@ -301,7 +307,7 @@ function decorate(report, snapshot, state, error) {
   };
 }
 
-function fallback(snapshot, error) {
+function fallback(snapshot, error, state = 'unavailable') {
   // Preserve available supporting data after a later-stage error; the core grounded call is mandatory.
   let report;
   if (snapshot.direct)
@@ -332,9 +338,11 @@ function fallback(snapshot, error) {
       limitations: [],
     });
   report.limitations.push(
-    'Grounded research is incomplete. Unformatted claims are available in the source drawer; no unchecked figures are displayed.',
+    state === 'partial'
+      ? 'Company intelligence is available. Additional report formatting was skipped to stay within the three-request limit. Only validated supporting figures are displayed.'
+      : 'Grounded research is incomplete. Unformatted claims are available in the source drawer; no unchecked figures are displayed.',
   );
-  return decorate(report, snapshot, 'unavailable', error);
+  return decorate(report, snapshot, state, error);
 }
 
 async function format(snapshot, deps) {
@@ -407,7 +415,7 @@ export async function researchCompany({
   fallbackModel = fallbackGeminiModel,
   intelFallbackModel = fallbackIntelModel,
 } = {}) {
-  const cacheKey = `${model}:${fallbackModel}:fixed-fallback-v1:${language}:${query.trim().toLowerCase()}:${includeTargets}:${includeIntel ? companyIntelModel() + ':coverage-v2' : 'no-intel'}`;
+  const cacheKey = `${model}:${fallbackModel}:fixed-fallback-v2:${language}:${query.trim().toLowerCase()}:${includeTargets}:${includeIntel ? companyIntelModel() + ':coverage-v2' : 'no-intel'}`;
   for (const [id, snapshot] of snapshots)
     if (Date.now() - snapshot.cachedAt > ttl) {
       snapshots.delete(id);
@@ -536,6 +544,19 @@ export async function researchCompany({
           }),
       });
       snapshot.companyIntel.model = snapshot.intelModel || companyIntelModel();
+    }
+    // A successful intelligence fallback may use the last slot. Assemble validated
+    // supporting facts locally rather than treating an unnecessary fourth call as failure.
+    if (snapshot.companyIntel && snapshot.calls >= 3) {
+      onProgress({
+        stage: 'complete',
+        message:
+          'Company intelligence is ready. Keeping validated supporting data without another Gemini request.',
+      });
+      const report = fallback(snapshot, null, 'partial');
+      snapshot.report = report;
+      completed.set(snapshot.cacheKey, snapshot);
+      return report;
     }
     // A listing makes valuation relevant. Skip when explicitly disabled or the core already supplies target evidence.
     if (

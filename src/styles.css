@@ -2081,3 +2081,14 @@ dialog::backdrop {
     display: none;
   }
 }
+
+.export-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.export-options [role='alert'] {
+  width: 100%;
+  color: #a0442f;
+}

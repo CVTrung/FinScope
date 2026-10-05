@@ -194,3 +194,24 @@ The previous section had no image asset. Replaced empty visual space with a loca
 ## Home company suggestions — 2026-10-05
 
 Added the existing 36 Vietnamese company alias entries to a native input suggestion list, plus six visible ticker/name choices (FPT, HPG, VNM, VCB, MWG, VIC). Choosing a quick suggestion fills/focuses the input without starting research. Build passed. Browser verified VNM selection enables the research button, the list contains 36 entries, and the visible chips render correctly. Screenshot: artifacts/home-company-suggestions.png. Temporary preview stopped and tab closed; no live Gemini calls.
+
+
+## Excel export and model failure visibility — 2026-10-05
+
+Added a Node/ExcelJS XLSX download route beside CSV. Refactored CSV rows into a shared typed row builder; CSV output retains its original escaping/shape. Workbook includes overview, period/unit/scope/source data and optional company-intelligence update/insight sheets, wrapped text, readable widths, numeric values, filters and frozen headings. Failed Gemini requests now appear in attempt history and the failure card identifies failed model/fallback usage. Legacy screenshots cannot identify their failed model by themselves.
+
+120 tests passed and production build passed. XLSX round-trip tests validate zero/loss/missing targets, literal formula-like text, Vietnamese, intelligence records, formatting, API MIME and language/input validation. Browser exported HPG report to the Downloads folder; reopening the actual downloaded XLSX confirmed four populated sheets. Browser download-event capture timed out, but file timestamp and workbook reopening confirmed successful download. Screenshot: artifacts/excel-export-controls.png. Native Excel visual layout was not verified. No live Gemini calls made. Temporary preview stopped/closed.
+
+
+## Successful secondary fallback completion — 2026-10-05
+
+Cause: core research request one, failed 3.5 Flash request two, successful Lite request three, followed by an unnecessary formatting attempt rejected locally by the cap. The successful intel was already retained, but the UI showed a misleading fatal limit card. Now successful intel at the cap returns a cached partial report with validated supporting facts and a neutral formatting-skipped note, without asking Gemini again. Real failed fallbacks still show errors. Cache workflow version advanced to avoid serving older completion behavior.
+
+120 tests/build passed. Regression test asserts exact three model calls, retained intelligence and financials, partial/no-error status, no manual retry, and cache reuse without additional calls. Browser partial-state replay verified the neutral completion card beside retained financials/intelligence (sample workflow status, no live Gemini). Screenshot: artifacts/fallback-completion-fixed.png. Temporary preview stopped/closed.
+
+
+## Dedicated valuation export tab — 2026-10-05
+
+Removed the Valuation column from Insights and watchlist, retaining six aligned columns. Added Broker valuations / Báo cáo định giá with broker/title, original report date separately from publisher listing date, numeric target/currency, rating, thesis/assumptions/watch factors, sources/URLs, target origin, comparability and share basis. Partial broker records remain included. Listing target enrichment matches the website. Existing second-model valuation prose moves to explicitly marked model-interpretation rows in the new tab rather than being discarded or represented as a broker report. CSV and website layout are unchanged.
+
+121 tests passed, including XLSX reopening checks for column removal, source hyperlinks, a 125,700 VND listing target, unknown original date, retained listing date and unestablished comparability. Export endpoint verified in VI/EN. Native Excel rendering was not verified for this narrow export change. No server started and no Gemini calls.

@@ -31,7 +31,8 @@ const report = {
   workflow: 'grounded-research-v2',
   companyIntel: intel,
   generatedAt: intel.metadata.generated_at,
-  analysisStatus: { state: 'ready' },
+  analysisStatus: { state: process.argv.includes('--partial') ? 'partial' : 'ready' },
+  modelNotice: process.argv.includes('--partial') ? 'Gemini 3.5 Flash gặp lỗi hoặc giới hạn hạn ngạch. Đã chuyển sang Gemini 3.5 Flash-Lite.' : '',
   model: intel.model,
   priceData: { ticker: 'HPG', points: [], sources: [], provider: 'Vietstock', currency: 'VND' },
 };

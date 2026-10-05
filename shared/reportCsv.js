@@ -2,7 +2,7 @@ import { enrichListingTargets } from './brokerListing.js';
 import { safeUrl } from './report.js';
 
 // One rectangular CSV keeps periods, units, scopes and source links alongside each value.
-export function reportCsv(report, language = 'vi') {
+export function reportRows(report, language = 'vi') {
   const headers =
     language === 'vi'
       ? [
@@ -133,6 +133,11 @@ export function reportCsv(report, language = 'vi') {
         { sourceIds: [source.id] },
         { notes: source.title },
       );
+  return rows;
+}
+
+export function reportCsv(report, language = 'vi') {
+  const rows = reportRows(report, language);
   function cell(value) {
     let text = String(value ?? '');
     if (typeof value === 'string' && /^\s*[=+\-@]/.test(text)) text = "'" + text;
