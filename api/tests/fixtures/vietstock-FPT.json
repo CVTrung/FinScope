@@ -1,0 +1,18 @@
+{
+  "StockCode": "FPT",
+  "TradingDate": "/Date(1791997200000)/",
+  "ClosePrice": 57900,
+  "ColorID": 1,
+  "Change": 800,
+  "PerChange": 1.4,
+  "TotalVol": 2604240,
+  "TotalVal": 150955652000,
+  "TotalBuyTrade": 0,
+  "TotalSellTrade": 0,
+  "BuyAvgTrade": 0.0,
+  "SellAvgTrade": 0.0,
+  "ForeignBuyVal": 9609200000,
+  "ForeignSellVal": 27743210000,
+  "ProBuyVal": 0,
+  "ProSellVal": 0
+}

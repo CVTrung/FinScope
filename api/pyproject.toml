@@ -1,0 +1,17 @@
+[project]
+name = "finscope-api"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "uvicorn[standard]>=0.34,<1", "httpx>=0.28,<1", "pydantic-settings>=2.8,<3", "beautifulsoup4>=4.13,<5", "cachetools>=5.5,<7", "tzdata>=2025.1", "pypdf>=6,<7", "pypdfium2>=4,<6", "Pillow>=11,<13"]
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.11", "mypy>=1.15", "types-cachetools", "types-beautifulsoup4"]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+[tool.ruff]
+line-length = 110
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+

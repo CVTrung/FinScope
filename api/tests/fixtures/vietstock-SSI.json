@@ -1,0 +1,18 @@
+{
+  "StockCode": "SSI",
+  "TradingDate": "/Date(1791997200000)/",
+  "ClosePrice": 19350,
+  "ColorID": 1,
+  "Change": 450,
+  "PerChange": 2.38,
+  "TotalVol": 10634900,
+  "TotalVal": 203549815000,
+  "TotalBuyTrade": 0,
+  "TotalSellTrade": 0,
+  "BuyAvgTrade": 0.0,
+  "SellAvgTrade": 0.0,
+  "ForeignBuyVal": 29841835000,
+  "ForeignSellVal": 7859695000,
+  "ProBuyVal": 0,
+  "ProSellVal": 0
+}

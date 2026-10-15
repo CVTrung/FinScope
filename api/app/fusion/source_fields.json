@@ -1,0 +1,4091 @@
+{
+  "is1": [
+    {
+      "label": "Doanh thu thuần",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Doanh thu thuần hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Doanh thu thuần hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Doanh thu thuần",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Doanh thu thuần về bán hàng và cung cấp dịch vụ",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Tổng thu nhập hoạt động",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is2": [
+    {
+      "label": "Lợi nhuận gộp",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Lợi nhuận gộp hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Lợi nhuận gộp hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Lợi nhuận gộp",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lợi nhuận gộp về bán hàng và cung cấp dịch vụ",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "is3": [
+    {
+      "label": "Lợi nhuận thuần từ HĐKD",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Kết quả hoạt động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lợi nhuận thuần HĐKD trước dự phòng rủi ro",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Kết quả hoạt động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lợi nhuận thuần từ hoạt động kinh doanh",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Lợi nhuận thuần từ hoạt động kinh doanh trước chi phí dự phòng rủi ro tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is4": [
+    {
+      "label": "Doanh thu hoạt động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Doanh thu phí bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Doanh thu phí bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Doanh thu bán hàng và cung cấp dịch vụ",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Doanh thu hoạt động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is5": [
+    {
+      "label": "Lãi từ các tài sản tài chính ghi nhận thông qua lãi/lỗ (FVTPL)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lãi từ các tài sản tài chính ghi nhận thông qua lãi/lỗ (FVTPL)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is6": [
+    {
+      "label": "Lãi từ các khoản cho vay và phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lãi từ các khoản cho vay và phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is7": [
+    {
+      "label": "Doanh thu hoạt động môi giới chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Doanh thu từ hoạt động môi giới chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is8": [
+    {
+      "label": "Chi phí hoạt động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Giá vốn hàng bán",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Chi phí hoạt động kinh doanh",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is9": [
+    {
+      "label": "Thu nhập lãi thuần",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Thu nhập lãi thuần",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is10": [
+    {
+      "label": "Lãi thuần từ hoạt động dịch vụ",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Lãi/lỗ thuần từ hoạt động dịch vụ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is11": [
+    {
+      "label": "Doanh thu phí bảo hiểm thuần",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Doanh thu phí bảo hiểm thuần",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is12": [
+    {
+      "label": "Chi phí hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Tổng chi phí hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is13": [
+    {
+      "label": "Lợi nhuận trước thuế",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "BANK",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Lợi nhuận kế toán trước thuế",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is14": [
+    {
+      "label": "Lợi nhuận sau thuế của Cổ đông công ty mẹ",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "BANK",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Lợi nhuận cổ đông công ty mẹ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs1": [
+    {
+      "label": "Tổng tài sản",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "BANK",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Tổng tài sản",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs2": [
+    {
+      "label": "Tài sản ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Tài sản ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs3": [
+    {
+      "label": "Tài sản dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Tài sản dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs4": [
+    {
+      "label": "Cho vay khách hàng (không bao gồm dự phòng)",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Cho vay và cho thuê tài chính khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs5": [
+    {
+      "label": "Dự phòng rủi ro cho vay khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Dự phòng rủi ro cho vay và cho thuê tài chính khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs6": [
+    {
+      "label": "Tổng nợ phải trả",
+      "industries": [
+        "BANK",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Nợ phải trả",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Tổng nợ phải trả",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs7": [
+    {
+      "label": "Tiền gửi khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tiền gửi của khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs8": [
+    {
+      "label": "Nợ ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Nợ ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs83": [
+    {
+      "label": "Vay và nợ thuê tài chính ngắn hạn",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Vay và nợ thuê tài chính ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Vay và nợ ngắn hạn",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs9": [
+    {
+      "label": "Nợ dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Nợ dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs10": [
+    {
+      "label": "Vốn chủ sở hữu",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "BANK",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Vốn chủ sở hữu",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs11": [
+    {
+      "label": "Vốn góp cổ phần",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Vốn góp của chủ sở hữu",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Vốn điều lệ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs12": [
+    {
+      "label": "Vốn tổ chức tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Vốn của tổ chức tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is15": [
+    {
+      "label": "Phí bảo hiểm gốc",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is16": [
+    {
+      "label": "Phí nhận tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is17": [
+    {
+      "label": "Tăng dự phòng phí bảo hiểm gốc và nhận tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is18": [
+    {
+      "label": "Phí nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is19": [
+    {
+      "label": "Tổng phí nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is20": [
+    {
+      "label": "Tăng dự phòng phí nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is21": [
+    {
+      "label": "Hoa hồng nhượng tái bảo hiểm và doanh thu khác hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is22": [
+    {
+      "label": "Hoa hồng nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is23": [
+    {
+      "label": "Doanh thu khác hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is24": [
+    {
+      "label": "Chi bồi thường",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is25": [
+    {
+      "label": "Tổng chi bồi thường",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is26": [
+    {
+      "label": "Các khoản giảm trừ",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is27": [
+    {
+      "label": "Thu bồi thường nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is108": [
+    {
+      "label": "Tăng/giảm dự phòng toán học",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is28": [
+    {
+      "label": "Tăng dự phòng bồi thường bảo hiểm gốc và nhận tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is29": [
+    {
+      "label": "Tăng dự phòng bồi thường nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is30": [
+    {
+      "label": "Tổng chi bồi thường bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is31": [
+    {
+      "label": "Tăng dự phòng dao động lớn",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is32": [
+    {
+      "label": "Sử dụng từ dự phòng dao động lớn",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is33": [
+    {
+      "label": "Chi phí khác hoạt động bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is34": [
+    {
+      "label": "Chi hoa hồng bảo hiểm gốc",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is107": [
+    {
+      "label": "Chi phí khác hoạt động bảo hiểm gốc",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is110": [
+    {
+      "label": "Chi khác nhận tái bảo hiểm khác",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is111": [
+    {
+      "label": "Chi nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is52": [
+    {
+      "label": "Chi phí bán hàng",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Chi phí bán hàng",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is39": [
+    {
+      "label": "Chi phí quản lý doanh nghiệp",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Chi phí quản lý doanh nghiệp",
+      "industries": [
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Chi phí quản lý công ty chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Chi phí hoạt động",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is40": [
+    {
+      "label": "Lợi nhuận thuần từ hoạt động kinh doanh bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is65": [
+    {
+      "label": "Lãi bán các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is66": [
+    {
+      "label": "Chênh lệch tăng đánh giá lại các tài sản tài chính thông qua lãi/lỗ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is67": [
+    {
+      "label": "Cổ tức, tiền lãi phát sinh từ tài sản tài chính FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is68": [
+    {
+      "label": "Lãi từ các khoản đầu tư nắm giữ đến ngày đáo hạn (HTM)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is69": [
+    {
+      "label": "Lãi từ các tài sản tài chính sẵn sàng để bán (AFS)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is70": [
+    {
+      "label": "Lãi từ các công cụ phát sinh phòng ngừa rủi ro",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is71": [
+    {
+      "label": "Doanh thu bảo lãnh phát hành chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is72": [
+    {
+      "label": "Doanh thu đại lý phát hành chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is73": [
+    {
+      "label": "Doanh thu hoạt động tư vấn đầu tư chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is74": [
+    {
+      "label": "Doanh thu hoạt động ủy thác, đấu giá",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is75": [
+    {
+      "label": "Doanh thu lưu ký chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is76": [
+    {
+      "label": "Doanh thu hoạt động đầu tư chứng khoán, góp vốn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is77": [
+    {
+      "label": "Thu cho thuê sử dụng tài sản",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is78": [
+    {
+      "label": "Doanh thu hoạt động tư vấn tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is79": [
+    {
+      "label": "Doanh thu khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is50": [
+    {
+      "label": "Các khoản giảm trừ doanh thu",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is80": [
+    {
+      "label": "Lỗ các tài sản tài chính ghi nhận thông qua lãi lỗ (FVTPL)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is81": [
+    {
+      "label": "Lỗ bán các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is82": [
+    {
+      "label": "Chênh lệch giảm đánh giá lại các tài sản tài chính FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is83": [
+    {
+      "label": "Chi phí giao dịch mua các tài sản tài chính FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is84": [
+    {
+      "label": "Lỗ các khoản đầu tư nắm giữ đến ngày đáo hạn (HTM)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is85": [
+    {
+      "label": "Chi phí lãi vay, lỗ từ các khoản cho vay và phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is86": [
+    {
+      "label": "Lỗ và ghi nhận chênh lệch đánh giá theo giá trị hợp lý tài sản tài chính sẵn sàng để bán (AFS)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is87": [
+    {
+      "label": "Chi phí dự phòng tài sản tài chính, xử lý tổn thất các khoản phải thu khó đòi và lỗ suy giảm tài sản tài chính và cổ phiếu đi vay",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is88": [
+    {
+      "label": "Lỗ từ các tài sản tài chính phái sinh phòng ngừa rủi ro",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is89": [
+    {
+      "label": "Chi phí hoạt động tự doanh",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is90": [
+    {
+      "label": "Chi phí môi giới chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is91": [
+    {
+      "label": "Chi phí hoạt động bảo lãnh, đại lý phát hành chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is92": [
+    {
+      "label": "Chi phí tư vấn đầu tư chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is93": [
+    {
+      "label": "Chi phí hoạt động đấu giá, ủy thác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is94": [
+    {
+      "label": "Chi phí lưu ký chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is95": [
+    {
+      "label": "Chi phí hoạt động tư vấn tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is96": [
+    {
+      "label": "Chi phí các dịch vụ khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is37": [
+    {
+      "label": "Doanh thu hoạt động tài chính",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Doanh thu tài chính",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is97": [
+    {
+      "label": "Chênh lệch lãi tỷ giá hối đoái đã và chưa thực hiện",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is98": [
+    {
+      "label": "Doanh thu, dự thu cổ tức, lãi tiền gửi không cố định phát sinh trong kỳ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is99": [
+    {
+      "label": "Lãi bán, thanh lý các khoản đầu tư vào công ty con, liên kết, liên doanh",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is100": [
+    {
+      "label": "Doanh thu khác về đầu tư",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is38": [
+    {
+      "label": "Chi phí tài chính",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Chi phí tài chính",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is101": [
+    {
+      "label": "Chênh lệch lỗ tỷ giá hối đoái đã và chưa thực hiện",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is51": [
+    {
+      "label": "Chi phí lãi vay",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is102": [
+    {
+      "label": "Lỗ bán, thanh lý các khoản đầu tư vào công ty con, liên kết, liên doanh",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is103": [
+    {
+      "label": "Chi phí dự phòng suy giảm giá trị các khoản đầu tư tài chính dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is104": [
+    {
+      "label": "Chi phí tài chính khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is36": [
+    {
+      "label": "Lợi nhuận hoạt động tài chính",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is109": [
+    {
+      "label": "Lợi nhuận hoạt động đầu tư bất động sản",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is41": [
+    {
+      "label": "Lợi nhuận thuần hoạt động ngân hàng",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is42": [
+    {
+      "label": "Lợi nhuận hoạt động khác",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "is43": [
+    {
+      "label": "Thu nhập khác, ròng",
+      "industries": [
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Lợi nhuận khác",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is44": [
+    {
+      "label": "Lợi nhuận từ công ty liên doanh, liên kết",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Thu nhập từ góp vốn, mua cổ phần",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is53": [
+    {
+      "label": "Thu nhập khác",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Thu nhập từ hoạt động khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is54": [
+    {
+      "label": "Chi phí khác",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is55": [
+    {
+      "label": "Thu nhập lãi và các khoản thu nhập tương tự",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is56": [
+    {
+      "label": "Chi phí lãi và các chi phí tương tự",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is57": [
+    {
+      "label": "Thu nhập từ hoạt động dịch vụ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is58": [
+    {
+      "label": "Chi phí hoạt động dịch vụ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is59": [
+    {
+      "label": "Lãi/lỗ thuần từ hoạt động kinh doanh ngoại hối và vàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is60": [
+    {
+      "label": "Lãi/lỗ thuần từ mua bán chứng khoán kinh doanh",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is61": [
+    {
+      "label": "Lãi/lỗ thuần từ mua bán chứng khoán đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is62": [
+    {
+      "label": "Lãi/lỗ thuần từ hoạt động khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is63": [
+    {
+      "label": "Chi phí hoạt động khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is64": [
+    {
+      "label": "Chi phí dự phòng rủi ro tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "is45": [
+    {
+      "label": "Thuế thu nhập doanh nghiệp",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is46": [
+    {
+      "label": "Chi phí thuế thu nhập hiện hành",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is47": [
+    {
+      "label": "Chi phí thuế thu nhập hoãn lại",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is48": [
+    {
+      "label": "Lợi nhuận kế toán sau thuế",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "is49": [
+    {
+      "label": "Lợi nhuận cổ đông thiểu số",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf1": [
+    {
+      "label": "Lưu chuyển tiền thuần từ hoạt động kinh doanh",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf41": [
+    {
+      "label": "Thu nhập lãi và các khoản thu nhập tương tự nhận được",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf42": [
+    {
+      "label": "Chi phí lãi và các chi phí tương tự đã trả",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf43": [
+    {
+      "label": "Thu nhập từ hoạt động dịch vụ nhận được",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf44": [
+    {
+      "label": "Chênh lệch số tiền thực thu/thực chi từ hoạt động kinh doanh (ngoại tệ, vàng bạc, chứng khoán)",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf20": [
+    {
+      "label": "Thu nhập khác",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tiền thu khác từ hoạt động kinh doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf45": [
+    {
+      "label": "Tiền thu các khoản nợ đã được xử lý hóa, bù đắp bằng nguồn rủi ro",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf46": [
+    {
+      "label": "Tiền chi trả cho nhân viên và hoạt động quản lý, công vụ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf47": [
+    {
+      "label": "Tiền thuế thu nhập thực nộp trong kỳ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf98": [
+    {
+      "label": "Lưu chuyển tiền thuần từ hoạt động kinh doanh trước những thay đổi về tài sản và vốn lưu động",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf48": [
+    {
+      "label": "Tăng/giảm các khoản tiền, vàng gửi và cho vay các tổ chức tín dụng khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf49": [
+    {
+      "label": "Tăng/giảm các khoản về kinh doanh chứng khoán",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf50": [
+    {
+      "label": "Tăng/giảm các công cụ tài chính phái sinh và các tài sản tài chính khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf51": [
+    {
+      "label": "Tăng/giảm các khoản cho vay khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf52": [
+    {
+      "label": "Giảm nguồn dự phòng để bù đắp tổn thất các khoản",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf53": [
+    {
+      "label": "Tăng/giảm khác về tài sản hoạt động",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tăng/giảm các tài sản khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf54": [
+    {
+      "label": "Tăng/giảm các khoản nợ Chính phủ và Ngân hàng nhà nước",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf55": [
+    {
+      "label": "Tăng/giảm các khoản tiền gửi, tiền vay các tổ chức tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf56": [
+    {
+      "label": "Tăng/giảm tiền gửi của khách hàng (bao gồm cả Kho bạc Nhà nước)",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf57": [
+    {
+      "label": "Tăng/giảm phát hành giấy tờ có giá (ngoại trừ giấy tờ có giá phát hành được tính vào hoạt động tài chính)",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf58": [
+    {
+      "label": "Tăng/giảm vốn tài trợ, ủy thác đầu tư, cho vay mà tổ chức tín dụng chịu rủi ro",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf59": [
+    {
+      "label": "Tăng/giảm các công cụ tài chính phái sinh và các khoản nợ tài chính khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf60": [
+    {
+      "label": "Tăng/giảm lãi, phí phải trả",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf61": [
+    {
+      "label": "Tăng/giảm khác về công nợ hoạt động",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf62": [
+    {
+      "label": "Chi từ các quỹ của tổ chức tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf2": [
+    {
+      "label": "Lợi nhuận trước thuế",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf3": [
+    {
+      "label": "Khấu hao tài sản cố định",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf4": [
+    {
+      "label": "Phân bổ lợi thế thương mại",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf5": [
+    {
+      "label": "Các khoản dự phòng",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf6": [
+    {
+      "label": "Lãi/lỗ chênh lệch tỷ giá hối đoái",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf7": [
+    {
+      "label": "Lãi/lỗ từ thanh lý tài sản cố định",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf8": [
+    {
+      "label": "Lãi/lỗ từ hoạt động đầu tư",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Lãi/lỗ từ hoạt động đầu tư (đầu tư công ty con, liên doanh, liên kết)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf9": [
+    {
+      "label": "Chi phí lãi vay",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf10": [
+    {
+      "label": "Tiền lãi dự thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Thu lãi và cổ tức",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf11": [
+    {
+      "label": "Các khoản điều chỉnh khác",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf70": [
+    {
+      "label": "Tăng các chi phí phi tiền tệ:",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf71": [
+    {
+      "label": "Lỗ đánh giá lại giá trị các tài sản tài chính ghi nhận thông qua lãi/lỗ FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf72": [
+    {
+      "label": "Lỗ suy giảm giá trị các khoản đầu tư nắm giữ đến ngày đáo hạn (HTM) ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf73": [
+    {
+      "label": "Lỗ suy giảm giá trị các khoản cho vay",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf74": [
+    {
+      "label": "Lỗ về ghi nhận chênh lệch đánh giá theo giá trị hợp lý tài sản tài chính sẵn sàng để bán (AFS) khi phân loại lại",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf75": [
+    {
+      "label": "Suy giảm giá trị của các tài sản cố định, bất động sản đầu tư",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf76": [
+    {
+      "label": "Chi phí dự phòng suy giảm giá trị các khoản đầu tư tài chính dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf77": [
+    {
+      "label": "Lỗ khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf78": [
+    {
+      "label": "Giảm các doanh thu phi tiền tệ:",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf79": [
+    {
+      "label": "Lãi đánh giá lại giá trị các tài sản tài chính ghi nhận thông qua lãi/lỗ FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf80": [
+    {
+      "label": "Lãi về ghi nhận chênh lệch đánh giá theo giá trị hợp lý tài sản tài chính sẵn sàng để bán (AFS) khi phân loại lại",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf81": [
+    {
+      "label": "Lãi khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf12": [
+    {
+      "label": "Lợi nhuận từ hoạt động kinh doanh trước thay đổi vốn lưu động",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf82": [
+    {
+      "label": "Thay đổi tài sản và nợ phải trả hoạt động:",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf83": [
+    {
+      "label": "Tăng/giảm tài sản tài chính ghi nhận thông qua lãi/lỗ FVTPL",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf84": [
+    {
+      "label": "Tăng/giảm các khoản đầu tư nắm giữa đến ngày đáo hạn (HTM)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf85": [
+    {
+      "label": "Tăng/giảm các khoản cho vay",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf86": [
+    {
+      "label": "Tăng/giảm tài sản tài chính sẵn sàng để bán AFS",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf87": [
+    {
+      "label": "Tăng/giảm phải thu bán các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf88": [
+    {
+      "label": "Tăng/giảm phải thu và dự thu cổ tức, tiền lãi các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf89": [
+    {
+      "label": "Tăng/giảm các khoản phải thu các dịch vụ công ty chứng khoán cung cấp",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf90": [
+    {
+      "label": "Tăng/giảm các khoản phải thu về lỗi giao dịch các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf91": [
+    {
+      "label": "Tăng/giảm các khoản phải thu khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf92": [
+    {
+      "label": "Tăng/giảm chi phí phải trả (không bao gồm chi phí lãi vay)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf13": [
+    {
+      "label": "Tăng/giảm các khoản phải thu",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf14": [
+    {
+      "label": "Tăng/giảm hàng tồn kho",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf15": [
+    {
+      "label": "Tăng/giảm các khoản phải trả (không kể lãi vay phải trả, thuế thu nhập phải nộp)",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    },
+    {
+      "label": "Tăng/giảm phải trả, phải nộp khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf16": [
+    {
+      "label": "Tăng/giảm chi phí trả trước",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf17": [
+    {
+      "label": "Tăng/giảm chứng khoán kinh doanh",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING"
+      ]
+    }
+  ],
+  "cf19": [
+    {
+      "label": "Thuế thu nhập doanh nghiệp đã nộp",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf18": [
+    {
+      "label": "Lãi vay đã trả",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf93": [
+    {
+      "label": "Tăng/giảm phải trả cho người bán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf94": [
+    {
+      "label": "Tăng/giảm các khoản trích nộp phúc lợi nhân viên",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf95": [
+    {
+      "label": "Tăng/giảm thuế và các khoản phải nộp Nhà nước (không bao gồm thuế thu nhập doanh nghiệp đã nộp)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf96": [
+    {
+      "label": "Tăng/giảm phải trả người lao động",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf97": [
+    {
+      "label": "Tăng/giảm phải trả về lỗi giao dịch các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf21": [
+    {
+      "label": "Tiền chi khác từ hoạt động kinh doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf22": [
+    {
+      "label": "Lưu chuyển tiền thuần từ hoạt động đầu tư",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT",
+        "BANK"
+      ]
+    }
+  ],
+  "cf23": [
+    {
+      "label": "Tiền chi mua sắm, xây dựng tài sản cố định và các tài sản dài hạn khác",
+      "industries": [
+        "INSURANCE",
+        "BANK",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf24": [
+    {
+      "label": "Tiền thu từ thanh lý, nhượng bán tài sản cố định và các tài sản dài hạn khác",
+      "industries": [
+        "INSURANCE",
+        "BANK",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf63": [
+    {
+      "label": "Tiền chi từ thanh lý, nhượng bán tài sản cố định và các tài sản dài hạn khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf25": [
+    {
+      "label": "Tiền chi cho vay, mua các công cụ nợ của đơn vị khác",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf26": [
+    {
+      "label": "Tiền thu hồi cho vay, bán lại các công cụ nợ của đơn vị khác",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf64": [
+    {
+      "label": "Mua sắm bất động sản đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf65": [
+    {
+      "label": "Tiền thu từ bán, thanh lý bất động sản đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf66": [
+    {
+      "label": "Tiền chi ra do bán, thanh lý bất động sản đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf27": [
+    {
+      "label": "Tiền chi đầu tư góp vốn vào đơn vị khác",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf28": [
+    {
+      "label": "Tiền thu hồi đầu tư góp vốn vào đơn vị khác",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf29": [
+    {
+      "label": "Tiền thu lãi cho vay, cổ tức và lợi nhuận được chia",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf30": [
+    {
+      "label": "Lưu chuyển tiền thuần từ hoạt động tài chính",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf31": [
+    {
+      "label": "Tiền thu phát hành cổ phiếu, nhận vốn góp của chủ sở hữu",
+      "industries": [
+        "INSURANCE",
+        "BANK",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf32": [
+    {
+      "label": "Tiền thu từ phát hành giấy tờ có giá dài hạn có đủ điều kiện tính vào vốn tự có và các khoản vốn vay dài hạn khác",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tiền chi trả vốn góp cho các chủ sở hữu, mua lại cổ phiếu của doanh nghiệp đã phát hành",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf33": [
+    {
+      "label": "Tiền chi thanh toán giấy tờ có giá dài hạn đủ điều kiện tính vào vốn tự có và các khoản vốn vay dài hạn khác",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tiền vay ngắn, dài hạn được nhận",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf34": [
+    {
+      "label": "Tiền chi trả nợ gốc vay",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf35": [
+    {
+      "label": "Tiền chi trả nợ thuê tài chính",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf36": [
+    {
+      "label": "Cổ tức, lợi nhuận đã trả cho chủ sở hữu",
+      "industries": [
+        "INSURANCE",
+        "BANK",
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf67": [
+    {
+      "label": "Tiền chi ra mua cổ phiếu quỹ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf68": [
+    {
+      "label": "Tiền thu được do bán cổ phiếu quỹ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "cf37": [
+    {
+      "label": "Lưu chuyển tiền thuần trong kỳ",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf38": [
+    {
+      "label": "Tiền và tương đương tiền đầu kỳ",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf39": [
+    {
+      "label": "Ảnh hưởng của thay đổi tỷ giá hối đoái quy đổi ngoại tệ",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "cf40": [
+    {
+      "label": "Tiền và tương đương tiền cuối kỳ",
+      "industries": [
+        "INSURANCE",
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs13": [
+    {
+      "label": "Tiền mặt, vàng bạc, đá quý",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Tiền và các khoản tương đương tiền",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs118": [
+    {
+      "label": "Tiền gửi tại Ngân hàng nhà nước",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs119": [
+    {
+      "label": "Tiền, vàng gửi tại các tổ chức tín dụng khác và cho vay các tổ chức tín dụng khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs16": [
+    {
+      "label": "Chứng khoán kinh doanh",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Giá trị thuần đầu tư tài sản tài chính ngắn hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Đầu tư tài chính ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs17": [
+    {
+      "label": "Chứng khoán kinh doanh",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Chứng khoán kinh doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs18": [
+    {
+      "label": "Dự phòng giảm giá chứng khoán kinh doanh",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Dự phòng giảm giá chứng khoán kinh doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs120": [
+    {
+      "label": "Các công cụ tài chính phái sinh và các tài sản tài chính khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs121": [
+    {
+      "label": "Cho vay khách hàng",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs122": [
+    {
+      "label": "Hoạt động mua nợ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs123": [
+    {
+      "label": "Mua nợ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs124": [
+    {
+      "label": "Dự phòng rủi ro hoạt động mua nợ",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs125": [
+    {
+      "label": "Chứng khoán đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs126": [
+    {
+      "label": "Chứng khoán đầu tư sẵn sàng để bán",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs19": [
+    {
+      "label": "Chứng khoán đầu tư nắm giữ đến ngày đáo hạn",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Các khoản đầu tư nắm giữ đến ngày đáo hạn (HTM)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Đầu tư nắm giữ đến ngày đáo hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs127": [
+    {
+      "label": "Dự phòng giảm giá chứng khoán đầu tư",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs128": [
+    {
+      "label": "Góp vốn, đầu tư dài hạn",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Đầu tư dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs67": [
+    {
+      "label": "Đầu tư dài hạn khác",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Đầu tư dài hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Đầu tư dài hạn khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs65": [
+    {
+      "label": "Dự phòng giảm giá đầu tư dài hạn",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Dự phòng giảm giá tài sản tài chính dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Dự phòng đầu tư tài chính dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Dự phòng giảm giá tài sản tài chính dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs14": [
+    {
+      "label": "Tiền",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs15": [
+    {
+      "label": "Các khoản tương đương tiền",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs162": [
+    {
+      "label": "Các tài sản tài chính ghi nhận thông qua lãi/lỗ (FVTPL)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs163": [
+    {
+      "label": "Các khoản cho vay",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs164": [
+    {
+      "label": "Các khoản tài chính sẵn sàng để bán (AFS)",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs20": [
+    {
+      "label": "Các khoản phải thu ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Tổng các khoản phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs165": [
+    {
+      "label": "Các khoản phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs21": [
+    {
+      "label": "Phải thu ngắn hạn của khách hàng",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs135": [
+    {
+      "label": "Phải thu về hợp đồng bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs136": [
+    {
+      "label": "Phải thu khác của khách hàng",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs166": [
+    {
+      "label": "Phải thu các dịch vụ công ty chứng khoán cung cấp",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs22": [
+    {
+      "label": "Trả trước cho người bán ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs23": [
+    {
+      "label": "Phải thu nội bộ ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs167": [
+    {
+      "label": "Phải thu về lỗi giao dịch chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs168": [
+    {
+      "label": "Phải thu về hoạt động giao dịch chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs24": [
+    {
+      "label": "Phải thu về xây dựng cơ bản",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Phải thu theo tiến độ kế hoạch hợp đồng xây dựng",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs25": [
+    {
+      "label": "Phải thu về cho vay ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs137": [
+    {
+      "label": "Tạm ứng",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs138": [
+    {
+      "label": "Phải thu từ hoạt động đầu tư tài chính",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs26": [
+    {
+      "label": "Phải thu ngắn hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs169": [
+    {
+      "label": "Dự phòng suy giảm giá trị các khoản phải thu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs27": [
+    {
+      "label": "Dự phòng nợ khó đòi",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Dự phòng phải thu ngắn hạn khó đòi",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs28": [
+    {
+      "label": "Tài sản thiếu chờ xử lý",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs29": [
+    {
+      "label": "Hàng tồn kho, ròng",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs30": [
+    {
+      "label": "Hàng tồn kho",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs31": [
+    {
+      "label": "Dự phòng giảm giá hàng tồn kho",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs32": [
+    {
+      "label": "Tài sản ngắn hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs170": [
+    {
+      "label": "Vật tư văn phòng, công cụ, dụng cụ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs33": [
+    {
+      "label": "Chi phí trả trước ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs139": [
+    {
+      "label": "Chi phí hoa hồng chưa phân bổ",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs140": [
+    {
+      "label": "Chi phí trả trước ngắn hạn khác",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs34": [
+    {
+      "label": "Thuế giá trị gia tăng được khấu trừ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Thuế giá trị gia tăng được khấu trừ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs35": [
+    {
+      "label": "Thuế và các khoản khác phải thu của nhà nước",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Phải thu thuế khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs141": [
+    {
+      "label": "Các khoản cầm cố, ký cược, ký quỹ",
+      "industries": [
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs36": [
+    {
+      "label": "Giao dịch mua bán lại trái phiếu chính phủ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs37": [
+    {
+      "label": "Tài sản ngắn hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs171": [
+    {
+      "label": "Dự phòng suy giảm giá trị tài sản ngắn hạn khác",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs142": [
+    {
+      "label": "Tài sản tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs143": [
+    {
+      "label": "Dự phòng phí nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs144": [
+    {
+      "label": "Dự phòng bồi thường nhượng tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs38": [
+    {
+      "label": "Các khoản phải thu dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs39": [
+    {
+      "label": "Phải thu dài hạn của khách hàng",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs40": [
+    {
+      "label": "Trả trước cho người bán dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs41": [
+    {
+      "label": "Vốn kinh doanh ở các đơn vị trực thuộc",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs42": [
+    {
+      "label": "Phải thu nội bộ dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs43": [
+    {
+      "label": "Phải thu về cho vay dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs44": [
+    {
+      "label": "Phải thu dài hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs145": [
+    {
+      "label": "Ký quỹ bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs146": [
+    {
+      "label": "Phải thu dài hạn khác",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs45": [
+    {
+      "label": "Dự phòng phải thu dài hạn khó đòi",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs46": [
+    {
+      "label": "Tài sản cố định",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs47": [
+    {
+      "label": "Tài sản cố định hữu hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs48": [
+    {
+      "label": "Nguyên giá TSCĐ hữu hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs49": [
+    {
+      "label": "Khấu hao lũy kế TSCĐ hữu hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs50": [
+    {
+      "label": "Tài sản cố định thuê tài chính",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs51": [
+    {
+      "label": "Nguyên giá TSCĐ thuê tài chính",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs52": [
+    {
+      "label": "Khấu hao lũy kế TSCĐ thuê tài chính",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs53": [
+    {
+      "label": "Tài sản cố định vô hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs54": [
+    {
+      "label": "Nguyên giá TSCĐ vô hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs55": [
+    {
+      "label": "Khấu hao lũy kế TSCĐ vô hình",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs56": [
+    {
+      "label": "Bất động sản đầu tư",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs57": [
+    {
+      "label": "Nguyên giá BĐS đầu tư",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs58": [
+    {
+      "label": "Khấu hao lũy kế BĐS đầu tư",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs59": [
+    {
+      "label": "Tài sản dở dang dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs60": [
+    {
+      "label": "Chi phí sản xuất, kinh doanh dở dang dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs61": [
+    {
+      "label": "Chi phí xây dựng cơ bản dở dang",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs62": [
+    {
+      "label": "Đầu tư tài chính dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs63": [
+    {
+      "label": "Đầu tư vào công ty con",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Đầu tư vào công ty con",
+      "industries": [
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs64": [
+    {
+      "label": "Đầu tư vào công ty liên kết, liên doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Đầu tư vào công ty liên doanh, liên kết",
+      "industries": [
+        "BANK",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs66": [
+    {
+      "label": "Đầu tư nắm giữ đến ngày đáo hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Đầu tư nắm giữ đến ngày đáo hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs173": [
+    {
+      "label": "Đầu tư chứng khoán dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs68": [
+    {
+      "label": "Tài sản dài hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Tài sản “Có” khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs174": [
+    {
+      "label": "Cầm cố, thế chấp, ký quỹ và ký cược dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs69": [
+    {
+      "label": "Chi phí trả trước dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs70": [
+    {
+      "label": "Tài sản thuế thu nhập hoãn lại",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs71": [
+    {
+      "label": "Thiết bị, vật tư, phụ tùng thay thế dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs147": [
+    {
+      "label": "Tài sản ký quỹ dài hạn",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs175": [
+    {
+      "label": "Tiền chi nộp quỹ hỗ trợ thanh toán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs72": [
+    {
+      "label": "Tài sản dài hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs73": [
+    {
+      "label": "Lợi thế thương mại",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Lợi thế thương mại",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs176": [
+    {
+      "label": "Dự phòng suy giảm giá trị tài sản dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs129": [
+    {
+      "label": "Các khoản nợ Chính phủ và Ngân hàng nhà nước",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs130": [
+    {
+      "label": "Tiền gửi và vay các tổ chức tín dụng khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs194": [
+    {
+      "label": "Các công cụ tài chính phái sinh và các khoản nợ tài chính khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs132": [
+    {
+      "label": "Vốn tài trợ, ủy thác đầu tư, cho vay mà tổ chức tín dụng chịu rủi ro",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs133": [
+    {
+      "label": "Phát hành giấy tờ có giá",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs131": [
+    {
+      "label": "Các khoản nợ khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs177": [
+    {
+      "label": "Vay tài sản tài chính ngắn hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs178": [
+    {
+      "label": "Trái phiếu chuyển đổi ngắn hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs179": [
+    {
+      "label": "Trái phiếu phát hành ngắn hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs180": [
+    {
+      "label": "Vay quỹ hỗ trợ thanh toán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs181": [
+    {
+      "label": "Phải trả hoạt động giao dịch chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs182": [
+    {
+      "label": "Phải trả về lỗi giao dịch các tài sản tài chính",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs74": [
+    {
+      "label": "Phải trả người bán ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Phải trả thương mại",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs148": [
+    {
+      "label": "Phải trả về hợp đồng bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs149": [
+    {
+      "label": "Phải trả khác cho người bán",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs75": [
+    {
+      "label": "Người mua trả tiền trước ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs76": [
+    {
+      "label": "Thuế và các khoản phải nộp nhà nước",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Các khoản phải trả về thuế",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs77": [
+    {
+      "label": "Phải trả người lao động",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs183": [
+    {
+      "label": "Các khoản trích nộp phúc lợi nhân viên",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs78": [
+    {
+      "label": "Chi phí phải trả ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs79": [
+    {
+      "label": "Phải trả nội bộ ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs80": [
+    {
+      "label": "Phải trả theo tiến độ kế hoạch hợp đồng xây dựng",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Phải trả về xây dựng cơ bản",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs150": [
+    {
+      "label": "Doanh thu hoa hồng chưa được hưởng",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs81": [
+    {
+      "label": "Doanh thu chưa thực hiện ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs184": [
+    {
+      "label": "Nhận ký quỹ, ký cược ngắn hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs185": [
+    {
+      "label": "Phải trả cổ tức, gốc và lãi trái phiếu",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs186": [
+    {
+      "label": "Phải trả tổ chức phát hành chứng khoán",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs82": [
+    {
+      "label": "Phải trả khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs84": [
+    {
+      "label": "Dự phòng các khoản phải trả ngắn hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs85": [
+    {
+      "label": "Quỹ khen thưởng phúc lợi",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs86": [
+    {
+      "label": "Quỹ bình ổn giá",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs87": [
+    {
+      "label": "Giao dịch mua bán lại trái phiếu chính phủ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs95": [
+    {
+      "label": "Vay và nợ thuê tài chính dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs187": [
+    {
+      "label": "Vay tài sản tài chính dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs96": [
+    {
+      "label": "Trái phiếu chuyển đổi dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Trái phiếu chuyển đổi",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs188": [
+    {
+      "label": "Trái phiếu phát hành dài hạn",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs88": [
+    {
+      "label": "Phải trả nhà cung cấp dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs89": [
+    {
+      "label": "Người mua trả tiền trước dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs90": [
+    {
+      "label": "Chi phí phải trả dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs91": [
+    {
+      "label": "Phải trả nội bộ về vốn kinh doanh",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs92": [
+    {
+      "label": "Phải trả nội bộ dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs93": [
+    {
+      "label": "Doanh thu chưa thực hiện dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs94": [
+    {
+      "label": "Phải trả dài hạn khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs97": [
+    {
+      "label": "Cổ phiếu ưu đãi (Nợ)",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs151": [
+    {
+      "label": "Ký quỹ, ký cược dài hạn",
+      "industries": [
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs98": [
+    {
+      "label": "Thuế thu nhập hoãn lại phải trả",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs99": [
+    {
+      "label": "Dự phòng phải trả dài hạn",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs100": [
+    {
+      "label": "Quỹ phát triển khoa học và công nghệ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs101": [
+    {
+      "label": "Dự phòng trợ cấp mất việc",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs189": [
+    {
+      "label": "Quỹ bảo vệ nhà đầu tư",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs152": [
+    {
+      "label": "Dự phòng nghiệp vụ bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs153": [
+    {
+      "label": "Dự phòng phí bảo hiểm gốc và nhận tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs154": [
+    {
+      "label": "Dự phòng toán học",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs155": [
+    {
+      "label": "Dự phòng bồi thường bảo hiểm gốc nhận tái bảo hiểm",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs156": [
+    {
+      "label": "Dự phòng dao động lớn",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs157": [
+    {
+      "label": "Dự phòng chia lãi",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs158": [
+    {
+      "label": "Dự phòng đảm bảo cân đối",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs102": [
+    {
+      "label": "Cổ phiếu phổ thông có quyền biểu quyết",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs103": [
+    {
+      "label": "Cổ phiếu ưu đãi",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    },
+    {
+      "label": "Cổ phiếu ưu đãi",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs104": [
+    {
+      "label": "Thặng dư vốn cổ phần",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Thặng dư vốn cổ phần",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs105": [
+    {
+      "label": "Quyền chọn chuyển đổi trái phiếu",
+      "industries": [
+        "MANUFACTURING",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs106": [
+    {
+      "label": "Vốn khác của chủ sở hữu",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    },
+    {
+      "label": "Vốn khác",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs134": [
+    {
+      "label": "Vốn đầu tư xây dựng cơ bản",
+      "industries": [
+        "BANK"
+      ]
+    }
+  ],
+  "bs107": [
+    {
+      "label": "Cổ phiếu quỹ",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Cổ phiếu quỹ",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs112": [
+    {
+      "label": "Quỹ của tổ chức tín dụng",
+      "industries": [
+        "BANK"
+      ]
+    },
+    {
+      "label": "Quỹ khác thuộc vốn chủ sở hữu",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs108": [
+    {
+      "label": "Chênh lệch đánh giá lại tài sản",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs109": [
+    {
+      "label": "Chênh lệch tỷ giá hối đoái",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs191": [
+    {
+      "label": "Quỹ dự trữ điều lệ",
+      "industries": [
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs110": [
+    {
+      "label": "Quỹ đầu tư phát triển",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs159": [
+    {
+      "label": "Quỹ dự phòng tài chính",
+      "industries": [
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs160": [
+    {
+      "label": "Quỹ dự trữ bắt buộc",
+      "industries": [
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs111": [
+    {
+      "label": "Quỹ hỗ trợ sắp xếp doanh nghiệp",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE"
+      ]
+    }
+  ],
+  "bs113": [
+    {
+      "label": "Lợi nhuận sau thuế chưa phân phối",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs114": [
+    {
+      "label": "LNST chưa phân phối lũy kế đến cuối kỳ trước",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs115": [
+    {
+      "label": "LNST chưa phân phối kỳ này",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs116": [
+    {
+      "label": "Lợi ích cổ đông không kiểm soát",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs193": [
+    {
+      "label": "Nguồn kinh phí và quỹ khác",
+      "industries": [
+        "MANUFACTURING",
+        "INSURANCE",
+        "INVESTMENT"
+      ]
+    }
+  ],
+  "bs117": [
+    {
+      "label": "Tổng nguồn vốn",
+      "industries": [
+        "MANUFACTURING",
+        "BANK",
+        "INVESTMENT",
+        "INSURANCE"
+      ]
+    }
+  ]
+}

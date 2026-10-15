@@ -1,0 +1,18 @@
+{
+  "StockCode": "VNM",
+  "TradingDate": "/Date(1791997200000)/",
+  "ClosePrice": 57400,
+  "ColorID": -1,
+  "Change": -500,
+  "PerChange": -0.86,
+  "TotalVol": 602400,
+  "TotalVal": 34551210000,
+  "TotalBuyTrade": 0,
+  "TotalSellTrade": 0,
+  "BuyAvgTrade": 0.0,
+  "SellAvgTrade": 0.0,
+  "ForeignBuyVal": 2020440000,
+  "ForeignSellVal": 13229880000,
+  "ProBuyVal": 0,
+  "ProSellVal": 0
+}

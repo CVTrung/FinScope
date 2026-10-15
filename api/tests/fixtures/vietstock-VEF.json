@@ -1,0 +1,18 @@
+{
+  "StockCode": "VEF",
+  "TradingDate": "/Date(1791997200000)/",
+  "ClosePrice": 74800,
+  "ColorID": 0,
+  "Change": 0,
+  "PerChange": 0.0,
+  "TotalVol": 0,
+  "TotalVal": 0,
+  "TotalBuyTrade": 14,
+  "TotalSellTrade": 17,
+  "BuyAvgTrade": 78.57,
+  "SellAvgTrade": 17.65,
+  "ForeignBuyVal": 0,
+  "ForeignSellVal": 0,
+  "ProBuyVal": 0,
+  "ProSellVal": 0
+}
