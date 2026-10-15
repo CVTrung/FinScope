@@ -1,0 +1,26 @@
+# Required trigger substitutions: _IMAGE and _API_BASE_URL (ending in /api).
+# NEXT_PUBLIC_* values are compiled into the browser bundle at build time.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target
+      - web
+      - -f
+      - Dockerfile
+      - --build-arg
+      - NEXT_PUBLIC_API_BASE_URL=${_API_BASE_URL}
+      - -t
+      - ${_IMAGE}
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_IMAGE}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', '${_IMAGE}', '--region', '${_REGION}', '--port', '8080', '--memory', '512Mi', '--timeout', '120', '--allow-unauthenticated']
+images: ['${_IMAGE}']
+substitutions:
+  _SERVICE_NAME: finscope-web
+  _REGION: asia-southeast1
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -108,3 +108,12 @@ Ghi chú bàn giao: tab người dùng được tải lại sau khi restart API 
 - Kiểm thử: 78/78 pytest đạt, Ruff/mypy 29 file sạch; TypeScript và Next.js production build đạt. Có một deprecation warning Starlette/httpx như trước. Kiểm tra tiếng Việt là heuristic chặn đầu ra thuần tiếng Anh, không phải bộ nhận diện ngôn ngữ tuyệt đối.
 
 - Xác nhận cuối: monthly-v5-outlook chạy live thành công (16 giây), chia ba mục có bằng chứng URL thật; UI tải lại hiển thị đúng kết quả. Desktop document 1265/1265px, 15 thẻ tin, body 15px. Đã reset viewport sau kiểm tra mobile. Bản trả lời và log live nằm trong artifacts/outlook-final.json; không coi mọi suy luận AI là dữ kiện đã kiểm toán thủ công.
+
+## Docker / Cloud Build — sửa lỗi thiếu Dockerfile ở gốc
+- Nguyên nhân log người dùng: context /workspace là gốc repository nhưng Dockerfile trước đây chỉ có tại api/ và web/. Không phải lỗi cổng hay lỗi Gemini.
+- Thêm Dockerfile gốc: build mặc định API, target api và web rõ ràng; cloudbuild.api.yaml / cloudbuild.web.yaml build → push → deploy hai service. Web bắt buộc API URL HTTPS kết thúc /api từ build args, không đóng localhost vào bundle cloud. Root .dockerignore loại .env, node_modules và artifact. Dockerfile API riêng copy source trước pip install.
+- Đã khởi động Docker Desktop và build Linux image thật: docker build -t finscope-api:cloud-check . đạt; target web với API URL kiểm tra HTTPS đạt, Next.js compile/typecheck/static generation đạt. Lần kéo Node base image đầu gặp timeout TLS Docker Hub, chạy lại thành công.
+- API container PORT=9090, host 127.0.0.1:18081: /health và /api/health 200; VNM overview 200, cả Simplize/Vietstock/Yahoo báo ok. Chạy UID 10001; PDFium/Pillow import được, đủ 7 prompt; /app/.env không tồn tại.
+- Web container PORT=9091, host 127.0.0.1:18082: /, /company/VNM, /compare?tickers=VCB,TCB,MBB,ACB đều 200. 13 script asset trả thành công; browser bundle chứa đúng API URL build-time kiểm tra. Chạy UID 1000. URL dùng kiểm tra là api-validation.example, không phải API cloud thật; chưa có kiểm thử end-to-end hai service cloud.
+- Parse hai YAML thành công; kiểm tra target/context/build-push-deploy và docker compose config --quiet đạt. Đã dừng hai container kiểm thử, giữ nguyên các server local sản phẩm.
+- Chưa push GitHub, chưa chạy Cloud Build, chưa deploy Cloud Run hoặc kiểm tra IAM/secret/CORS cloud. README có trình tự API → web → ALLOWED_ORIGINS, substitutions và quyền trigger cần thiết. Các ghi chú Docker chưa xác minh ở phần cũ của tài liệu được thay thế bằng kết quả local trong mục này.

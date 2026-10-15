@@ -93,9 +93,38 @@ Set-Location D:\Project\FinScope2
 docker compose up --build
 ```
 
-Compose có hai service API/web, không DB. `.env` chỉ truyền cho API; build web chỉ nhận URL công khai. Chưa xác nhận chạy Docker trong lượt này do Docker engine trên máy chưa hoạt động tại thời điểm kiểm tra. Có thể chạy trực tiếp bằng hai terminal như trên.
+Compose có hai service API/web, không DB. `.env` chỉ truyền cho API; build web chỉ nhận URL công khai. Cấu hình Compose đã kiểm tra cú pháp; kết quả build/run image Dockerfile gốc được ghi ở `docs/validation.md`. Có thể chạy trực tiếp bằng hai terminal như trên.
 
 ## Tự triển khai Cloud Run
+
+### Sửa lỗi `/workspace/Dockerfile: no such file or directory`
+
+Build từ GitHub có context là **gốc repository**, trong khi Dockerfile cũ chỉ nằm ở `api/` và `web/`. Dockerfile mới ở gốc hỗ trợ hai target: `api` và `web`; build mặc định (không truyền target) chạy **API**. Một image mặc định này không phục vụ giao diện Next.js. Dự án vẫn triển khai thành **hai service** theo `agent.md`.
+
+Thực hiện theo thứ tự sau trong Google Cloud Console sau khi đưa các file mới lên GitHub:
+
+1. **API trước**: tại Cloud Build → Triggers, sửa trigger đang lỗi. Chọn **Cloud Build configuration file**, đường dẫn `cloudbuild.api.yaml` (context gốc repo). Thêm substitution `_IMAGE=asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-api:COMMIT_TAG`; thay project/repository/tag bằng giá trị thật. Mặc định service `finscope-api`, region `asia-southeast1`; có thể đổi `_SERVICE_NAME` và `_REGION` trong trigger. Config tự build, push và deploy.
+2. Khi API chạy, lấy URL Cloud Run của API và kiểm tra `https://YOUR_API_URL/health`. Trong phần Variables & Secrets của **API**, gắn `GEMINI_API_KEY` hoặc `GOOGLE_API_KEY` từ Secret Manager; key không đưa vào build args/GitHub. API vẫn chạy khi chưa có key nhưng các phần AI sẽ không khả dụng.
+3. **Web**: tạo trigger thứ hai cùng repository, dùng `cloudbuild.web.yaml`. Thêm `_IMAGE=asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-web:COMMIT_TAG` và `_API_BASE_URL=https://YOUR_API_URL/api` (không thêm `/` cuối). Mặc định deploy thành `finscope-web`. URL này được đóng vào JavaScript lúc build; chỉ sửa biến môi trường lúc chạy web sẽ không đổi URL trong trình duyệt.
+4. Sau khi web có URL, đặt `ALLOWED_ORIGINS=https://YOUR_WEB_URL` trong biến môi trường **API**, rồi tạo revision mới. Mở web và kiểm tra tìm mã, bảng số liệu, tin tức và AI. Giữ timeout request tối thiểu 120 giây như các file build đã cấu hình.
+
+Artifact Registry repository phải tồn tại. Service account của từng trigger cần quyền ghi Artifact Registry, ghi log, deploy Cloud Run và `Service Account User` trên runtime service account; service account API cần quyền đọc secret được gắn. Các config sử dụng `--allow-unauthenticated` vì web gọi trực tiếp API công khai. Nếu đã có trigger cũ tự build/deploy cùng service, sửa hoặc tắt trigger đó để tránh hai pipeline ghi đè nhau. Hướng dẫn chính thức: https://docs.cloud.google.com/build/docs/deploying-builds/deploy-cloud-run.
+
+Nếu giữ màn hình build kiểu **Dockerfile** của trigger cũ, đường dẫn `Dockerfile`, context `.` hiện build được API mặc định. Vẫn phải tạo service web riêng bằng config bên trên; đừng dùng cùng tên service cho cả hai trigger.
+
+Kiểm tra image local từ gốc repo (Docker Desktop cần đang chạy):
+
+```powershell
+docker build --target api -t finscope-api:local .
+docker run --rm -p 8080:8080 -e PORT=8080 finscope-api:local
+# Terminal khác: kiểm tra http://localhost:8080/health
+docker build --target web --build-arg NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api -t finscope-web:local .
+docker run --rm -p 3001:8080 -e PORT=8080 finscope-web:local
+```
+
+Các Dockerfile trong `api/`, `web/` vẫn dùng context thư mục tương ứng cho Docker Compose local. `.dockerignore` gốc loại `.env`, key, node_modules và artifact local khỏi context cloud. Không tự triển khai lên Google Cloud từ workspace này.
+
+### Lệnh triển khai thủ công với Dockerfile từng thư mục
 
 Hai service độc lập, stateless. Lệnh dưới là mẫu, thay PROJECT_ID/REGION/URL. Không có lệnh deploy nào đã được thực thi bởi agent.
 
