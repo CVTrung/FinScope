@@ -117,3 +117,11 @@ Ghi chú bàn giao: tab người dùng được tải lại sau khi restart API 
 - Web container PORT=9091, host 127.0.0.1:18082: /, /company/VNM, /compare?tickers=VCB,TCB,MBB,ACB đều 200. 13 script asset trả thành công; browser bundle chứa đúng API URL build-time kiểm tra. Chạy UID 1000. URL dùng kiểm tra là api-validation.example, không phải API cloud thật; chưa có kiểm thử end-to-end hai service cloud.
 - Parse hai YAML thành công; kiểm tra target/context/build-push-deploy và docker compose config --quiet đạt. Đã dừng hai container kiểm thử, giữ nguyên các server local sản phẩm.
 - Chưa push GitHub, chưa chạy Cloud Build, chưa deploy Cloud Run hoặc kiểm tra IAM/secret/CORS cloud. README có trình tự API → web → ALLOWED_ORIGINS, substitutions và quyền trigger cần thiết. Các ghi chú Docker chưa xác minh ở phần cũ của tài liệu được thay thế bằng kết quả local trong mục này.
+
+## Sửa build legacy từ log 281a45f6 — 15/10/2026
+- Log cloud commit b220f53 chạy toàn bộ stage trước stage cuối, lỗi ERR_INVALID_URL input rỗng trong web-builder dù mục tiêu mặc định là API. Kiểm thử trước bằng BuildKit không phát hiện vì BuildKit bỏ qua stage không liên quan.
+- Tách Dockerfile gốc chỉ còn 9 chỉ dẫn Python API; chuyển frontend sang Dockerfile.web với context gốc. cloudbuild.web.yaml đổi đường dẫn tương ứng. Không yêu cầu NEXT_PUBLIC_API_BASE_URL khi build API; web vẫn kiểm tra HTTPS /api và nay báo rõ thiếu build arg thay vì TypeError chung chung.
+- Đã build thật bằng DOCKER_BUILDKIT=0 docker build -t finscope-api:legacy-check .: đủ 9 bước, thành công, không có Node/npm. Container PORT=9090 trả /health 200, đã dừng container sau kiểm tra.
+- Hai cấu hình YAML trỏ đúng Dockerfile tương ứng, context gốc; git diff --check đạt. README cập nhật hướng dẫn trigger và yêu cầu chạy commit mới, retry commit cũ không nhận bản sửa.
+- Không push GitHub/deploy Cloud Run trong lượt sửa này. Kết quả legacy local bổ sung cho kiểm thử BuildKit ở mục trước.
+- Dockerfile.web độc lập cũng build thành công thành finscope-web:split-check bằng BuildKit với URL HTTPS kiểm tra; Next.js compile, typecheck, static generation và đóng image đều đạt.

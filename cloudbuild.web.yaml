@@ -7,7 +7,7 @@ steps:
       - --target
       - web
       - -f
-      - Dockerfile
+      - Dockerfile.web
       - --build-arg
       - NEXT_PUBLIC_API_BASE_URL=${_API_BASE_URL}
       - -t

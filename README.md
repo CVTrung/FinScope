@@ -99,7 +99,7 @@ Compose có hai service API/web, không DB. `.env` chỉ truyền cho API; build
 
 ### Sửa lỗi `/workspace/Dockerfile: no such file or directory`
 
-Build từ GitHub có context là **gốc repository**, trong khi Dockerfile cũ chỉ nằm ở `api/` và `web/`. Dockerfile mới ở gốc hỗ trợ hai target: `api` và `web`; build mặc định (không truyền target) chạy **API**. Một image mặc định này không phục vụ giao diện Next.js. Dự án vẫn triển khai thành **hai service** theo `agent.md`.
+Build từ GitHub có context là **gốc repository**, trong khi Dockerfile cũ chỉ nằm ở `api/` và `web/`. `Dockerfile` ở gốc chỉ build **API**; `Dockerfile.web` ở gốc chỉ build **web**. Hai file độc lập để tương thích cả legacy Docker builder và BuildKit; build API không chạy npm hoặc yêu cầu URL API. Một image mặc định này không phục vụ giao diện Next.js. Dự án vẫn triển khai thành **hai service** theo `agent.md`.
 
 Thực hiện theo thứ tự sau trong Google Cloud Console sau khi đưa các file mới lên GitHub:
 
@@ -118,11 +118,17 @@ Kiểm tra image local từ gốc repo (Docker Desktop cần đang chạy):
 docker build --target api -t finscope-api:local .
 docker run --rm -p 8080:8080 -e PORT=8080 finscope-api:local
 # Terminal khác: kiểm tra http://localhost:8080/health
-docker build --target web --build-arg NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api -t finscope-web:local .
+docker build -f Dockerfile.web --target web --build-arg NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api -t finscope-web:local .
 docker run --rm -p 3001:8080 -e PORT=8080 finscope-web:local
 ```
 
 Các Dockerfile trong `api/`, `web/` vẫn dùng context thư mục tương ứng cho Docker Compose local. `.dockerignore` gốc loại `.env`, key, node_modules và artifact local khỏi context cloud. Không tự triển khai lên Google Cloud từ workspace này.
+
+### Sửa lỗi `ERR_INVALID_URL`, `input: ''` khi build API
+
+Log `Step 19/31` gọi Node để kiểm tra URL trong khi đang build API là do Dockerfile gộp cũ. Legacy builder chạy mọi stage phía trước image cuối; BuildKit local có thể bỏ qua stage không liên quan. Đã thay bằng hai file độc lập: trigger Dockerfile hiện tại giữ đường dẫn `Dockerfile`, context `.`, không cần URL web/API để build backend. Cần push commit chứa bản sửa mới rồi chạy build commit mới; retry commit cũ vẫn lỗi.
+
+Nếu build **web**, dùng `cloudbuild.web.yaml` mới hoặc `Dockerfile.web` với build arg `NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api`. Web vẫn bắt buộc có URL API thật lúc build. Đổi biến môi trường runtime sẽ không thay giá trị đã compile.
 
 ### Lệnh triển khai thủ công với Dockerfile từng thư mục
 
