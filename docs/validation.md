@@ -125,3 +125,11 @@ Ghi chú bàn giao: tab người dùng được tải lại sau khi restart API 
 - Hai cấu hình YAML trỏ đúng Dockerfile tương ứng, context gốc; git diff --check đạt. README cập nhật hướng dẫn trigger và yêu cầu chạy commit mới, retry commit cũ không nhận bản sửa.
 - Không push GitHub/deploy Cloud Run trong lượt sửa này. Kết quả legacy local bổ sung cho kiểm thử BuildKit ở mục trước.
 - Dockerfile.web độc lập cũng build thành công thành finscope-web:split-check bằng BuildKit với URL HTTPS kiểm tra; Next.js compile, typecheck, static generation và đóng image đều đạt.
+
+## Một service finscope — 15/10/2026
+- Người dùng chọn gộp frontend/backend trong một service; thay thế yêu cầu hai service cũ. Dockerfile gốc build Next.js và Python vào một image Debian Bookworm. Next chạy trên PORT, rewrite /api/* và /health tới FastAPI nội bộ 127.0.0.1:8001. API base compile là /api, không yêu cầu domain backend/CORS riêng.
+- cloudbuild.yaml mới build/push/deploy service finscope tại asia-southeast3, memory 1Gi, timeout 120s. Các config tách riêng chỉ giữ làm lựa chọn cũ; README yêu cầu tắt trigger cũ để tránh ghi đè service.
+- Launcher chờ API health trước khi mở web, giữ secret Gemini riêng ở môi trường Python, dừng các child khi SIGTERM hoặc một child thoát. Proxy timeout 120000ms thay mặc định 30000ms.
+- TypeScript typecheck và Ruff launcher đạt; AST Python/YAML cấu hình đạt; kiểm tra config transpile xác nhận rewrite /api và /health, timeout và mode local tách riêng. Hai tình huống launcher giả lập đạt: SIGTERM thoát 0, child lỗi thoát 1 và dừng sibling; PORT được truyền đúng, key không truyền cho Node.
+- CHƯA xác minh build/run image gộp thành công: build Docker đầu ngắt EOF; engine sau đó không khởi động, trả DockerDesktop/Wsl/ExecError, provisioning block device /dev/sdd / mkfs exit status 1. Đã thử mở lại/restart theo yêu cầu người dùng; không reset/xóa volume/data. Build legacy tiếp theo không vào được daemon. Đây là giới hạn môi trường Docker, không được coi là kiểm thử container đạt.
+- Chưa push GitHub, deploy cloud hoặc thay đổi các service cloud. Server sản phẩm local ngoài Docker không bị dừng.

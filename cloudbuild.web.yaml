@@ -1,5 +1,5 @@
-# Ready for project finscope-510510. Select this file in the frontend trigger.
-# Builds/deploys finscope-web only; the existing finscope API is unchanged.
+# Optional split deployment only. Use cloudbuild.yaml for one service.
+# Frontend service: finscope. Deploy the finscope-web backend first.
 # NEXT_PUBLIC_* values are compiled into the browser bundle at build time.
 steps:
   - name: gcr.io/cloud-builders/docker
@@ -21,10 +21,10 @@ steps:
     args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', '${_IMAGE}', '--region', '${_REGION}', '--port', '8080', '--memory', '512Mi', '--timeout', '120', '--allow-unauthenticated']
 images: ['${_IMAGE}']
 substitutions:
-  _SERVICE_NAME: finscope-web
+  _SERVICE_NAME: finscope
   _REGION: asia-southeast3
-  _IMAGE: asia-southeast3-docker.pkg.dev/finscope-510510/cloud-run-source-deploy/finscope-web:$BUILD_ID
-  _API_BASE_URL: https://finscope-443408251328.asia-southeast3.run.app/api
+  _IMAGE: asia-southeast3-docker.pkg.dev/finscope-510510/cloud-run-source-deploy/finscope-frontend:$BUILD_ID
+  _API_BASE_URL: https://finscope-web-443408251328.asia-southeast3.run.app/api
 options:
   dynamicSubstitutions: true
   logging: CLOUD_LOGGING_ONLY

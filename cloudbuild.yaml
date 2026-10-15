@@ -1,0 +1,17 @@
+# Single-service deployment. No API URL or CORS substitutions are needed.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'Dockerfile', '-t', '${_IMAGE}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_IMAGE}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', '${_IMAGE}', '--region', '${_REGION}', '--port', '8080', '--memory', '1Gi', '--timeout', '120', '--allow-unauthenticated']
+images: ['${_IMAGE}']
+substitutions:
+  _SERVICE_NAME: finscope
+  _REGION: asia-southeast3
+  _IMAGE: asia-southeast3-docker.pkg.dev/finscope-510510/cloud-run-source-deploy/finscope:$BUILD_ID
+options:
+  dynamicSubstitutions: true
+  logging: CLOUD_LOGGING_ONLY

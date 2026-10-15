@@ -95,65 +95,37 @@ docker compose up --build
 
 Compose có hai service API/web, không DB. `.env` chỉ truyền cho API; build web chỉ nhận URL công khai. Cấu hình Compose đã kiểm tra cú pháp; kết quả build/run image Dockerfile gốc được ghi ở `docs/validation.md`. Có thể chạy trực tiếp bằng hai terminal như trên.
 
-## Tự triển khai Cloud Run
+## Tự triển khai Cloud Run — một service finscope
 
-### Sửa lỗi `/workspace/Dockerfile: no such file or directory`
+Theo lựa chọn mới của người dùng, frontend và backend được đóng gói trong **một image, một service `finscope`**. Đây là thay đổi so với kiến trúc hai service ban đầu trong `agent.md`.
 
-Build từ GitHub có context là **gốc repository**, trong khi Dockerfile cũ chỉ nằm ở `api/` và `web/`. `Dockerfile` ở gốc chỉ build **API**; `Dockerfile.web` ở gốc chỉ build **web**. Hai file độc lập để tương thích cả legacy Docker builder và BuildKit; build API không chạy npm hoặc yêu cầu URL API. Một image mặc định này không phục vụ giao diện Next.js. Dự án vẫn triển khai thành **hai service** theo `agent.md`.
+- `Dockerfile` gốc build cả Next.js và FastAPI. Next.js nghe `0.0.0.0:$PORT`; FastAPI chỉ nghe nội bộ `127.0.0.1:8001`.
+- Trình duyệt gọi `/api` cùng domain. Next.js proxy tới backend nội bộ, giữ query/status/body/ảnh; timeout proxy 120 giây để các yêu cầu AI không bị ngắt sau 30 giây.
+- `/` trả giao diện, `/health` và `/api/health` trả trạng thái backend. Không cần URL API cloud riêng hoặc CORS giữa hai service.
+- `scripts/start-container.py` chờ API sẵn sàng mới mở web; dừng cả hai khi nhận SIGTERM, hoặc thoát container nếu một tiến trình bị lỗi để Cloud Run khởi động lại.
 
-Thực hiện theo thứ tự sau trong Google Cloud Console sau khi đưa các file mới lên GitHub:
+### Deploy từ GitHub
 
-1. **API trước**: tại Cloud Build → Triggers, sửa trigger đang lỗi. Chọn **Cloud Build configuration file**, đường dẫn `cloudbuild.api.yaml` (context gốc repo). Thêm substitution `_IMAGE=asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-api:COMMIT_TAG`; thay project/repository/tag bằng giá trị thật. Mặc định service `finscope-api`, region `asia-southeast1`; có thể đổi `_SERVICE_NAME` và `_REGION` trong trigger. Config tự build, push và deploy.
-2. Khi API chạy, lấy URL Cloud Run của API và kiểm tra `https://YOUR_API_URL/health`. Trong phần Variables & Secrets của **API**, gắn `GEMINI_API_KEY` hoặc `GOOGLE_API_KEY` từ Secret Manager; key không đưa vào build args/GitHub. API vẫn chạy khi chưa có key nhưng các phần AI sẽ không khả dụng.
-3. **Web**: tạo trigger thứ hai cùng repository, dùng `cloudbuild.web.yaml`. Thêm `_IMAGE=asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-web:COMMIT_TAG` và `_API_BASE_URL=https://YOUR_API_URL/api` (không thêm `/` cuối). Mặc định deploy thành `finscope-web`. URL này được đóng vào JavaScript lúc build; chỉ sửa biến môi trường lúc chạy web sẽ không đổi URL trong trình duyệt.
-4. Sau khi web có URL, đặt `ALLOWED_ORIGINS=https://YOUR_WEB_URL` trong biến môi trường **API**, rồi tạo revision mới. Mở web và kiểm tra tìm mã, bảng số liệu, tin tức và AI. Giữ timeout request tối thiểu 120 giây như các file build đã cấu hình.
+1. Push bản sửa có `Dockerfile`, `cloudbuild.yaml`, `scripts/start-container.py` và `web/next.config.ts` lên branch đang deploy.
+2. Chỉ giữ **một trigger** cho service `finscope`. Trong Cloud Build → Triggers → Edit → Configuration, chọn **Cloud Build configuration file**, đường dẫn `cloudbuild.yaml`.
+3. File đã cấu hình project `finscope-510510`, region `asia-southeast3`, service `finscope` và image theo `$BUILD_ID`. Xóa các substitution cũ `_SERVICE_NAME`, `_IMAGE`, `_API_BASE_URL`, `_REGION` khỏi trigger nếu chúng ghi đè sai các mặc định. Không cần nhập URL API.
+4. Tắt trigger cũ build riêng API/web trước khi chạy pipeline mới để tránh ghi đè cùng service. Không cần xóa service `finscope` hiện có; deploy cùng service giữ nguyên URL.
+5. Kiểm tra service account trigger có quyền build/push Artifact Registry, ghi log, deploy Cloud Run và Service Account User trên tài khoản runtime. Repository `cloud-run-source-deploy` phải tồn tại. Chạy trigger trên commit mới.
+6. Trong **service `finscope`**, giữ/gắn `GEMINI_API_KEY` hoặc `GOOGLE_API_KEY` qua Secret Manager. Key và model chain đã có trên service được giữ khi deploy image mới; không đưa key vào build args. Nếu trước đó key nằm ở service khác, cần gắn lại cho `finscope`.
+7. Mở URL service để xem web; kiểm tra `/health`, `/api/health`, tìm mã, tin tức và AI. Pipeline đặt memory **1Gi**, request timeout **120 giây**. Nếu vẫn dùng trigger Dockerfile tự sinh thay vì YAML, chọn `Dockerfile`, context `.`, đồng thời đặt memory 1Gi và timeout 120 giây trong Cloud Run.
 
-Artifact Registry repository phải tồn tại. Service account của từng trigger cần quyền ghi Artifact Registry, ghi log, deploy Cloud Run và `Service Account User` trên runtime service account; service account API cần quyền đọc secret được gắn. Các config sử dụng `--allow-unauthenticated` vì web gọi trực tiếp API công khai. Nếu đã có trigger cũ tự build/deploy cùng service, sửa hoặc tắt trigger đó để tránh hai pipeline ghi đè nhau. Hướng dẫn chính thức: https://docs.cloud.google.com/build/docs/deploying-builds/deploy-cloud-run.
+Các file `cloudbuild.api.yaml`, `cloudbuild.web.yaml`, `api/Dockerfile`, `Dockerfile.web`, `web/Dockerfile` chỉ giữ làm lựa chọn triển khai tách riêng; không dùng các trigger đó cùng pipeline một service.
 
-Nếu giữ màn hình build kiểu **Dockerfile** của trigger cũ, đường dẫn `Dockerfile`, context `.` hiện build được API mặc định. Vẫn phải tạo service web riêng bằng config bên trên; đừng dùng cùng tên service cho cả hai trigger.
-
-Kiểm tra image local từ gốc repo (Docker Desktop cần đang chạy):
-
-```powershell
-docker build --target api -t finscope-api:local .
-docker run --rm -p 8080:8080 -e PORT=8080 finscope-api:local
-# Terminal khác: kiểm tra http://localhost:8080/health
-docker build -f Dockerfile.web --target web --build-arg NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api -t finscope-web:local .
-docker run --rm -p 3001:8080 -e PORT=8080 finscope-web:local
-```
-
-Các Dockerfile trong `api/`, `web/` vẫn dùng context thư mục tương ứng cho Docker Compose local. `.dockerignore` gốc loại `.env`, key, node_modules và artifact local khỏi context cloud. Không tự triển khai lên Google Cloud từ workspace này.
-
-### Sửa lỗi `ERR_INVALID_URL`, `input: ''` khi build API
-
-**Trigger web đã điền sẵn cho project hiện tại:** `cloudbuild.web.yaml` dùng project `finscope-510510`, region `asia-southeast3`, deploy service `finscope-web`, API `https://finscope-443408251328.asia-southeast3.run.app/api`. Không cần nhập substitutions trong Console; nếu trigger có giá trị cũ thì xóa chúng hoặc cập nhật cho khớp vì giá trị trên trigger có thể ghi đè file. Image được gắn tag `$BUILD_ID` riêng cho mỗi lượt build. Sau khi push file này lên GitHub, tạo trigger thứ hai cho repo/branch hiện tại, chọn **Cloud Build configuration file → Repository → cloudbuild.web.yaml**, chọn service account có quyền deploy rồi chạy trigger. File này là cấu hình các bước build/deploy, không tự đăng ký trigger vào Google Cloud. Giữ trigger API hiện có và sau deploy đặt `ALLOWED_ORIGINS` của API bằng URL service web.
-
-Log `Step 19/31` gọi Node để kiểm tra URL trong khi đang build API là do Dockerfile gộp cũ. Legacy builder chạy mọi stage phía trước image cuối; BuildKit local có thể bỏ qua stage không liên quan. Đã thay bằng hai file độc lập: trigger Dockerfile hiện tại giữ đường dẫn `Dockerfile`, context `.`, không cần URL web/API để build backend. Cần push commit chứa bản sửa mới rồi chạy build commit mới; retry commit cũ vẫn lỗi.
-
-Nếu build **web**, dùng `cloudbuild.web.yaml` mới hoặc `Dockerfile.web` với build arg `NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api`. Web vẫn bắt buộc có URL API thật lúc build. Đổi biến môi trường runtime sẽ không thay giá trị đã compile.
-
-### Lệnh triển khai thủ công với Dockerfile từng thư mục
-
-Hai service độc lập, stateless. Lệnh dưới là mẫu, thay PROJECT_ID/REGION/URL. Không có lệnh deploy nào đã được thực thi bởi agent.
+### Kiểm tra image một service ở local
 
 ```powershell
-# API: chạy tại thư mục api; source deploy sử dụng Dockerfile có sẵn
-gcloud run deploy finscope-api --source ./api --region asia-southeast1 --allow-unauthenticated --memory 1Gi --concurrency 20 --max-instances 3 --min-instances 0 --timeout 120 --set-secrets GEMINI_API_KEY=finscope-gemini-key:latest --set-env-vars GEMINI_MODEL_CHAIN=gemini-2.5-flash
+docker build -t finscope:local .
+docker run --rm -p 8080:8080 -e PORT=8080 --env-file .env finscope:local
 ```
 
-Tạo secret `finscope-gemini-key` trong Secret Manager và cấp quyền đọc cho service account API trước; không đưa key vào đối số `--set-env-vars`. Có thể cấu hình chuỗi model có dấu phẩy bằng giao diện Cloud Run hoặc env-vars file để tránh cú pháp phân tách dấu phẩy của gcloud.
+Mở `http://localhost:8080`; API dùng `http://localhost:8080/api`. Không cần mở thêm cổng backend. `.env` chỉ truyền khi chạy, không được COPY vào image. Bản web trong container cố định API base `/api`; việc chạy local bằng hai terminal ở phần đầu README vẫn giữ nguyên.
 
-Web cần build-time `NEXT_PUBLIC_API_BASE_URL`. Ví dụ build image bằng Docker, rồi push/deploy:
-
-```powershell
-docker build --build-arg NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api -t asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-web:latest ./web
-docker push asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-web:latest
-gcloud run deploy finscope-web --image asia-southeast1-docker.pkg.dev/PROJECT_ID/REPOSITORY/finscope-web:latest --region asia-southeast1 --allow-unauthenticated --memory 512Mi --max-instances 3
-```
-
-Sau khi biết URL web, đặt `ALLOWED_ORIGINS=https://YOUR_WEB_URL` trên API và kiểm tra CORS. Cổng Docker mặc định 8080, cả hai đọc `$PORT`, Next chạy standalone. Không dùng localhost làm API URL trong bản cloud. Đặt secret qua Secret Manager, `.env` không tự được upload.
-
-Kiểm tra `/health`, tìm mã, các tab và `/api/sources/status` sau deploy. IP Cloud Run có thể bị nguồn hạn chế dù local hoạt động; dùng `DISABLED_SOURCES` để tắt connector gặp vấn đề, không vượt cơ chế chống bot. Rate limit local mỗi IP là 60 request/phút/instance; chưa coi là quota toàn hệ thống khi scale nhiều instance.
+Các bước Cloud Build/Cloud Run chính thức: https://docs.cloud.google.com/build/docs/deploying-builds/deploy-cloud-run. Build/run local không thay thế kiểm thử secret, quota và truy cập nguồn tại Cloud Run. Lưu trữ vẫn là cache bộ nhớ, không thêm database.
 
 ## Cấu trúc
 
