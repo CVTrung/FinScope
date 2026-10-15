@@ -126,6 +126,8 @@ Các Dockerfile trong `api/`, `web/` vẫn dùng context thư mục tương ứn
 
 ### Sửa lỗi `ERR_INVALID_URL`, `input: ''` khi build API
 
+**Trigger web đã điền sẵn cho project hiện tại:** `cloudbuild.web.yaml` dùng project `finscope-510510`, region `asia-southeast3`, deploy service `finscope-web`, API `https://finscope-443408251328.asia-southeast3.run.app/api`. Không cần nhập substitutions trong Console; nếu trigger có giá trị cũ thì xóa chúng hoặc cập nhật cho khớp vì giá trị trên trigger có thể ghi đè file. Image được gắn tag `$BUILD_ID` riêng cho mỗi lượt build. Sau khi push file này lên GitHub, tạo trigger thứ hai cho repo/branch hiện tại, chọn **Cloud Build configuration file → Repository → cloudbuild.web.yaml**, chọn service account có quyền deploy rồi chạy trigger. File này là cấu hình các bước build/deploy, không tự đăng ký trigger vào Google Cloud. Giữ trigger API hiện có và sau deploy đặt `ALLOWED_ORIGINS` của API bằng URL service web.
+
 Log `Step 19/31` gọi Node để kiểm tra URL trong khi đang build API là do Dockerfile gộp cũ. Legacy builder chạy mọi stage phía trước image cuối; BuildKit local có thể bỏ qua stage không liên quan. Đã thay bằng hai file độc lập: trigger Dockerfile hiện tại giữ đường dẫn `Dockerfile`, context `.`, không cần URL web/API để build backend. Cần push commit chứa bản sửa mới rồi chạy build commit mới; retry commit cũ vẫn lỗi.
 
 Nếu build **web**, dùng `cloudbuild.web.yaml` mới hoặc `Dockerfile.web` với build arg `NEXT_PUBLIC_API_BASE_URL=https://YOUR_API_URL/api`. Web vẫn bắt buộc có URL API thật lúc build. Đổi biến môi trường runtime sẽ không thay giá trị đã compile.
